@@ -10,8 +10,6 @@ public class ClickBehaviour : MonoBehaviour
     Camera Camera;
     [SerializeField]
     LayerMask LayerMask;
-    [SerializeField]
-    MapZoomer MapZoomer;
 
     // Update is called once per frame
     void Update()
@@ -25,8 +23,8 @@ public class ClickBehaviour : MonoBehaviour
             RaycastHit2D[] rayHits = Physics2D.GetRayIntersectionAll(Camera.main.ScreenPointToRay(Input.mousePosition), 1000f, LayerMask);
             if (rayHits.Length > 0)
             {
-                RaycastHit2D rayHit = rayHits.OrderByDescending(x => x.collider.transform.position.z).First();
-                if (Mathf.RoundToInt(rayHit.collider.transform.position.z) == MapZoomer.ZoomLevel-1) 
+                RaycastHit2D rayHit = rayHits.OrderByDescending(x => x.collider.GetComponent<QuadBehaviour>().Level).First();
+                if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().Level) == Linker.instance.MapZoomer.ZoomLevel) 
                 {
                     rayHit.collider.gameObject.GetComponent<QuadBehaviour>().ClickFeedback();
                 }

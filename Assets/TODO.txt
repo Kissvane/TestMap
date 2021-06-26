@@ -1,14 +1,10 @@
-ECS
-Essayer de debugger avec adb
-
-
-mettre le projet sur GIT
-
-Tester les FPS sur mon mobile
+bug des noms qui reapparaissent pas en remontant
 Documentation
+faire une version alternative du projet avec URP et le glow
+Code cleaning
 
 ameliorations
 
-commenter chaque fonction
-créer des regions pour les variables
 ECS
+
+Mise en place d'un système d'object pooling pour les quads

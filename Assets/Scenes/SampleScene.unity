@@ -807,7 +807,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 109453013}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2358,7 +2358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbbdde25083ea354cbf673b5bc66970e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Quad: {fileID: 2377012573097479530, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
+  QuadPfb: {fileID: 2377012573097479530, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
   size: 100
   FirstQuad: {fileID: 1537040271}
   Colors:
@@ -2373,12 +2373,8 @@ MonoBehaviour:
   - {fileID: 1131682956}
   NameCanvas: {fileID: 1025063094}
   SetupCanvas: {fileID: 1096740756}
-  MapZoomer: {fileID: 381080140}
   ShadeRange: 0.2
-  MinColorRange: 10
-  MaxColorRange: 40
-  QuadWithBorder: {fileID: 21300000, guid: fad697686d96c60449ec90a0d245b9e9, type: 3}
-  TextObjectPooler: {fileID: 1025063097}
+  NameLength: 6
 --- !u!4 &381080139
 Transform:
   m_ObjectHideFlags: 0
@@ -2405,8 +2401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca31ebc80c8f28c49a4f8c280514adc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 963194227}
-  _zoomLevel: 1
+  _camera: {fileID: 963194227}
   ZoomDistances:
   - 80
   - 40
@@ -5111,7 +5106,7 @@ MonoBehaviour:
   Transform: {fileID: 963194228}
   LowLimit: {fileID: 1489900122}
   HighLimit: {fileID: 367338946}
-  Speed: 1
+  Speed: 0.33
   move: {x: 0, y: 0, z: 0}
 --- !u!114 &963194230
 MonoBehaviour:
@@ -5129,7 +5124,6 @@ MonoBehaviour:
   LayerMask:
     serializedVersion: 2
     m_Bits: 256
-  MapZoomer: {fileID: 381080140}
 --- !u!212 &967435303 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 2705991216617267776, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
@@ -6032,7 +6026,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1131682955}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -7489,6 +7483,18 @@ PrefabInstance:
       propertyPath: NameCanvas
       value: 
       objectReference: {fileID: 1025063096}
+    - target: {fileID: 8268709402524320243, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
+      propertyPath: ShakeStrength
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 8268709402524320243, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
+      propertyPath: QuadShakeStrength
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 8268709402524320243, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
+      propertyPath: TextShakeStrength
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6523734b73deed84aa7fd7cd29ef8f21, type: 3}
 --- !u!1 &1537040271 stripped
@@ -7906,7 +7912,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1626230856}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

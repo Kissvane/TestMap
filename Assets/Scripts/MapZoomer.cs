@@ -5,12 +5,12 @@ using UnityEngine;
 public class MapZoomer : MonoBehaviour
 {
     [SerializeField]
-    Camera Camera;
+    Camera _camera;
+    public Camera Camera { get => _camera; private set => _camera = value; }
 
-    [SerializeField]
     int _zoomLevel = 1;
     public int ZoomLevel { get => _zoomLevel; private set => _zoomLevel = value; }
-
+    
     [SerializeField]
     List<float> ZoomDistances;
 
@@ -36,7 +36,7 @@ public class MapZoomer : MonoBehaviour
         {
             HideNames(ZoomLevel);
             _zoomLevel++;
-            Camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
+            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
             ActivateQuads(_zoomLevel,true);
         }
     }
@@ -48,7 +48,7 @@ public class MapZoomer : MonoBehaviour
         {
             ActivateQuads(_zoomLevel, false);
             _zoomLevel--;
-            Camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
+            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
             ActivateQuads(_zoomLevel, true);
         }
     }
@@ -56,6 +56,10 @@ public class MapZoomer : MonoBehaviour
     public void ActivateQuads(int level, bool activate)
     {
         Linker.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
+        foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
+        {
+            quad.EnableTextIfAlreadyVisible();
+        }
     }
 
     public void HideNames(int level)

@@ -9,9 +9,9 @@ public class QuadBehaviour : MonoBehaviour
     [SerializeField]
     Transform Transform;
     [SerializeField]
-    float ShakeStrength = 1f;
+    float QuadShakeStrength = 1f;
     [SerializeField]
-    Collider2D Collider;
+    float TextShakeStrength = 1f;
     [SerializeField]
     Text Text;
     [SerializeField]
@@ -26,15 +26,11 @@ public class QuadBehaviour : MonoBehaviour
     private int level;
     public int Level { get => level; private set => level = value; }
     
-
-    
     [SerializeField]
     Renderer _renderer;
     public Renderer Renderer { get => _renderer; private set => _renderer = value; }
+    
     bool isShaking = false;
-
-    [SerializeField]
-    Canvas NameCanvas;
 
     
     public Renderer GetRenderer()
@@ -70,6 +66,14 @@ public class QuadBehaviour : MonoBehaviour
         GiveToPool();
     }
 
+    public void EnableTextIfAlreadyVisible()
+    {
+        if (Renderer.isVisible && Linker.instance.MapZoomer.ZoomLevel == level)
+        {
+            GetFromPool();
+        }
+    }
+
     void GetFromPool()
     {
         //Get Text from object pooler
@@ -86,6 +90,10 @@ public class QuadBehaviour : MonoBehaviour
     {
         if (Text != null) 
         {
+            if (isShaking)
+            {
+                DOTween.Kill(Text.rectTransform);
+            }
             //release the text to the object pooler
             Linker.instance.Pool.Release(Text);
             //disable it
@@ -102,22 +110,17 @@ public class QuadBehaviour : MonoBehaviour
         Level = level;
     }
 
-    public void EnableCollider(bool activate)
-    {
-        Collider.enabled = activate;
-    }
-
     public void ClickFeedback()
     {
         DOTween.Kill(Transform);
-        Transform textTransform = Text.transform;
+        RectTransform textTransform = Text.rectTransform;
         DOTween.Kill(textTransform.transform);
         ResetQuadPosition();
         ResetTextPosition();
         isShaking = true;
         //shake the Quad
-        textTransform.DOShakePosition(0.5f, textTransform.lossyScale.x * ShakeStrength, 20, 0).OnComplete(ResetTextPosition);
-        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * ShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
+        textTransform.DOShakeAnchorPos(0.5f, TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
+        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
         Linker.instance.QuadCounter.ShowResult();
     }
 

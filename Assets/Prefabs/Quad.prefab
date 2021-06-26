@@ -129,13 +129,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transform: {fileID: 2728846329958483654}
-  ShakeStrength: 0.5
+  QuadShakeStrength: 0.5
+  TextShakeStrength: 5
   Collider: {fileID: 6821065305385666240}
   Text: {fileID: 0}
-  name: 
-  position: {x: 0, y: 0, z: 0}
-  Renderer: {fileID: 2705991216617267776}
-  Canvas: {fileID: 0}
+  quadName: 
+  textPosition: {x: 0, y: 0, z: 0}
+  textScale: {x: 0, y: 0, z: 0}
+  initialPosition: {x: 0, y: 0, z: 0}
+  level: 0
+  _renderer: {fileID: 2705991216617267776}
 --- !u!61 &6821065305385666240
 BoxCollider2D:
   m_ObjectHideFlags: 0
