@@ -20,14 +20,14 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Emission:
-        m_Texture: {fileID: 2800000, guid: d7463efd1ae619641a7d7812454ade0e, type: 3}
+        m_Texture: {fileID: 2800000, guid: bdd419b685e6afe43b42a333d942a91e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: d7463efd1ae619641a7d7812454ade0e, type: 3}
+        m_Texture: {fileID: 2800000, guid: fad697686d96c60449ec90a0d245b9e9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats: []
     m_Colors:
-    - Color_E2372852: {r: 1.628937, g: 1.628937, b: 1.628937, a: 1}
+    - Color_E2372852: {r: 47.937256, g: 47.937256, b: 47.937256, a: 1}
   m_BuildTextureStacks: []
