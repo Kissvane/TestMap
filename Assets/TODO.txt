@@ -1,0 +1,14 @@
+ECS
+Essayer de debugger avec adb
+
+
+mettre le projet sur GIT
+
+Tester les FPS sur mon mobile
+Documentation
+
+ameliorations
+
+commenter chaque fonction
+créer des regions pour les variables
+ECS
