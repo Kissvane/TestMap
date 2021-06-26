@@ -27,6 +27,10 @@ public class MapConstructor : MonoBehaviour
     float ShadeRange = 0.2f;
     [SerializeField]
     int NameLength = 6;
+    [SerializeField]
+    Material GlowMaterial;
+    [SerializeField]
+    bool GlowMode = false;
 
     #endregion
 
@@ -111,8 +115,15 @@ public class MapConstructor : MonoBehaviour
                 //HIGHLIGHT this one
                 if (totalIndex == highlighted)
                 {
-                    Color.RGBToHSV(colorParent, out float H, out float S, out float V);
-                    spriteRenderer.color = Color.HSVToRGB(H, 0.35f, V);
+                    if (GlowMode)
+                    {
+                        spriteRenderer.material = GlowMaterial;
+                    }
+                    else 
+                    {
+                        Color.RGBToHSV(colorParent, out float H, out float S, out float V);
+                        spriteRenderer.color = Color.HSVToRGB(H, 0.35f, V);
+                    }
                 }
             }
         }
