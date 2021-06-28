@@ -5,24 +5,34 @@ using UnityEngine;
 public class Linker : MonoBehaviour
 {
     [SerializeField]
-    MapConstructor mapConstructor;
-    public MapConstructor MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
+    MapBuilder mapConstructor;
+    public MapBuilder MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
 
     [SerializeField]
     MapZoomer mapZoomer;
     public MapZoomer MapZoomer { get => mapZoomer; private set => mapZoomer = value; }
 
     [SerializeField]
-    TextObjectPooler pool;
-    public TextObjectPooler Pool { get => pool; set => pool = value; }
+    TextObjectPooler textPool;
+    public TextObjectPooler TextPool { get => textPool; private set => textPool = value; }
+
+    [SerializeField]
+    QuadObjectPooler quadPool;
+    public QuadObjectPooler QuadPool { get => quadPool; private set => quadPool = value; }
 
     [SerializeField]
     QuadCounter quadCounter;
     public QuadCounter QuadCounter { get => quadCounter; private set => quadCounter = value; }
 
+    [SerializeField]
+    QuadManager quadManager;
+    public QuadManager QuadManager { get => quadManager; private set => quadManager = value; }
+
     #region singleton
     static Linker _instance;
     public static Linker instance { get { return _instance; } }
+
+
 
     Linker()
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MapConstructor : MonoBehaviour
+public class MapBuilder : MonoBehaviour
 {
 
     #region Variables
@@ -21,8 +21,8 @@ public class MapConstructor : MonoBehaviour
     Transform NameCanvas;
     [SerializeField]
     Transform SetupCanvas;
-    public List<HashSet<QuadBehaviour>> Levels { get => levels; private set => levels = value; }
-    private List<HashSet<QuadBehaviour>> levels = new List<HashSet<QuadBehaviour>>();
+    public List<HashSet<AbstractQuad>> Levels { get => levels; private set => levels = value; }
+    private List<HashSet<AbstractQuad>> levels = new List<HashSet<AbstractQuad>>();
     [SerializeField]
     float ShadeRange = 0.2f;
     [SerializeField]
@@ -39,7 +39,15 @@ public class MapConstructor : MonoBehaviour
     void Start()
     {
         ConstructLevel1();
+        FirstQuad.transform.GetChild(1).SetParent(null);
+        FirstQuad.transform.GetChild(1).SetParent(null);
+        foreach (Transform t in levelsParents)
+        {
+            Destroy(t.gameObject);
+        }
+        Destroy(FirstQuad);
         SetupCanvas.gameObject.SetActive(false);
+        Linker.instance.QuadManager.TransformDatas();
         Linker.instance.MapZoomer.FirstZoom();
     }
 
@@ -53,19 +61,20 @@ public class MapConstructor : MonoBehaviour
 
         FirstQuad.transform.SetParent(LevelsParents[0]);
         FirstQuad.transform.localPosition = new Vector3(FirstQuad.transform.localPosition.x, FirstQuad.transform.localPosition.y, 0f);
-        QuadBehaviour behaviour = FirstQuad.GetComponentInChildren<QuadBehaviour>();
+        SetupQuadBehaviour behaviour = FirstQuad.GetComponentInChildren<SetupQuadBehaviour>();
+
+        QuadData result = GetData(behaviour, "Universe", 1, -1);
+        result.Color = Color.white;
         
-        GetTextData(behaviour, "Universe",1);
+        Levels.Add(new HashSet<AbstractQuad> { behaviour });
+        Levels.Add(new HashSet<AbstractQuad>());
+        Levels.Add(new HashSet<AbstractQuad>());
+        Levels.Add(new HashSet<AbstractQuad>());
         
-        Levels.Add(new HashSet<QuadBehaviour> { behaviour });
-        Levels.Add(new HashSet<QuadBehaviour>());
-        Levels.Add(new HashSet<QuadBehaviour>());
-        Levels.Add(new HashSet<QuadBehaviour>());
-        
-        ConstructLevel2(FirstQuad.transform.GetChild(0).GetChild(0), 2f,2f);
+        ConstructLevel2(FirstQuad.transform.GetChild(0).GetChild(0), 0,2f,2f);
     }
 
-    public void ConstructLevel2(Transform parent, float lineNumber, float columnNumber)
+    public void ConstructLevel2(Transform parent, int fatherIndex,float lineNumber, float columnNumber)
     {
         for (float x = 0; x < lineNumber; x++)
         {
@@ -74,15 +83,19 @@ public class MapConstructor : MonoBehaviour
                 SpriteRenderer spriteRenderer;
                 Transform pivot;
                 int totalIndex;
-                ProcessQuad(parent, 2, 0.925f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
+
+                QuadData result = ProcessQuad(parent, fatherIndex,2, 0.925f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = Colors[totalIndex];
-                ConstructLevel3(pivot, 16f, 8f, spriteRenderer.color);
+                
+                ConstructLevel3(pivot, Linker.instance.QuadManager.inProcessDatas.Count - 1, 16f, 8f, spriteRenderer.color);
+                result.Color = spriteRenderer.color;
                 spriteRenderer.transform.localScale *= 1.075f;
+                result.Scale = spriteRenderer.transform.localScale;
             }
         }
     }
 
-    public void ConstructLevel3(Transform parent, float columnNumber, float lineNumber, Color parentColor)
+    public void ConstructLevel3(Transform parent, int fatherIndex,float columnNumber, float lineNumber, Color parentColor)
     {
         for (float x = 0; x < columnNumber; x++)
         {
@@ -91,15 +104,16 @@ public class MapConstructor : MonoBehaviour
                 SpriteRenderer spriteRenderer;
                 Transform pivot;
                 int totalIndex;
-                ProcessQuad(parent, 3, 0.9f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
+                QuadData result = ProcessQuad(parent, fatherIndex,3, 0.9f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = GetRandomShade(parentColor);
-                ConstructLevel4(pivot, 3f, 3f, spriteRenderer.color);
+                result.Color = spriteRenderer.color;
+                ConstructLevel4(pivot, Linker.instance.QuadManager.inProcessDatas.Count - 1, 3f, 3f, spriteRenderer.color);
             }
         }
 
     }
 
-    public void ConstructLevel4(Transform parent, float lineNumber, float columnNumber, Color colorParent)
+    public void ConstructLevel4(Transform parent, int fatherIndex,float lineNumber, float columnNumber, Color colorParent)
     {
         int highlighted = Random.Range(0, 9);
 
@@ -110,19 +124,22 @@ public class MapConstructor : MonoBehaviour
                 SpriteRenderer spriteRenderer;
                 Transform pivot;
                 int totalIndex;
-                ProcessQuad(parent, 4, 0.7f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
+                QuadData result = ProcessQuad(parent, fatherIndex,4, 0.7f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = colorParent;
+                result.Color = spriteRenderer.color;
                 //HIGHLIGHT this one
                 if (totalIndex == highlighted)
                 {
                     if (GlowMode)
                     {
                         spriteRenderer.material = GlowMaterial;
+                        result.SetGlow();
                     }
                     else 
                     {
                         Color.RGBToHSV(colorParent, out float H, out float S, out float V);
                         spriteRenderer.color = Color.HSVToRGB(H, 0.35f, V);
+                        result.Color = spriteRenderer.color;
                     }
                 }
             }
@@ -142,7 +159,7 @@ public class MapConstructor : MonoBehaviour
     /// <param name="renderer"></param>
     /// <param name="nextPivot"></param>
     /// <param name="totalIndex"></param>
-    public void ProcessQuad(Transform parent, int level, float scaleReduction, float lineNumber, float columnNumber, float lineIndex, float columnIndex, out SpriteRenderer renderer, out Transform nextPivot, out int totalIndex)
+    public QuadData ProcessQuad(Transform parent, int fatherIndex,int level, float scaleReduction, float lineNumber, float columnNumber, float lineIndex, float columnIndex, out SpriteRenderer renderer, out Transform nextPivot, out int totalIndex)
     {
         Transform current = Instantiate(QuadPfb, parent).transform;
         current.localScale /= Mathf.Max(lineNumber, columnNumber);
@@ -155,8 +172,8 @@ public class MapConstructor : MonoBehaviour
         r.sortingOrder = level - 1;
         constructedQuad.SetParent(LevelsParents[level - 1]);
         constructedQuad.localPosition = new Vector3(constructedQuad.localPosition.x, constructedQuad.localPosition.y, 0f);
-        QuadBehaviour behaviour = constructedQuad.GetComponent<QuadBehaviour>();
-        GetTextData(behaviour, GetRandomName(), level);
+        SetupQuadBehaviour behaviour = constructedQuad.GetComponent<SetupQuadBehaviour>();
+        QuadData result = GetData(behaviour, level == 3 ? totalIndex.ToString() : GetRandomName(), level, fatherIndex);
         Levels[level - 1].Add(behaviour);
 
         Destroy(current.gameObject);
@@ -164,6 +181,10 @@ public class MapConstructor : MonoBehaviour
 
         nextPivot = constructedQuad.GetChild(0);
         renderer = r;
+
+        Linker.instance.QuadManager.AddToTree(fatherIndex, Linker.instance.QuadManager.inProcessDatas.Count-1);
+
+        return result;
     }
 
     /// <summary>
@@ -171,15 +192,24 @@ public class MapConstructor : MonoBehaviour
     /// And get the necessary dependencies
     /// </summary>
     /// <param name="quad"></param>
-    public void GetTextData(QuadBehaviour quad, string quadName, int level)
+    public QuadData GetData(SetupQuadBehaviour quad, string quadName, int level, int fatherIndex)
     {
-        SetupCanvas.SetParent(quad.transform);
+        SetupCanvas.SetParent(quad.Transform);
         SetupCanvas.localPosition = Vector3.zero;
         SetupCanvas.localScale = Vector3.one * 0.003f;
         Transform textName = SetupCanvas.GetChild(0);
         textName.SetParent(NameCanvas);
         quad.Initialize(textName, quadName, level);
         textName.SetParent(SetupCanvas);
+        Transform oldParent = quad.transform.parent;
+        int oldSiblingIndex = quad.transform.GetSiblingIndex();
+        quad.transform.SetParent(null);
+        QuadData result = new QuadData(quad, level != 1);
+        Linker.instance.QuadManager.inProcessDatas.Add(result);
+        result.QuadFatherIndex = fatherIndex;
+        quad.transform.SetParent(oldParent);
+        quad.transform.SetSiblingIndex(oldSiblingIndex);
+        return result;
     }
 
     #endregion

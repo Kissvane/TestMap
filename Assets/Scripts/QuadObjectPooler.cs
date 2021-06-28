@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TextObjectPooler : ObjectPooler<Text>
+public class QuadObjectPooler : ObjectPooler<QuadBehaviour>
 {
-    public override void Release(Text go)
+    public override void Release(QuadBehaviour go)
     {
         base.Release(go);
         go.gameObject.SetActive(false);

@@ -24,20 +24,16 @@ public class MapZoomer : MonoBehaviour
 
     public void FirstZoom()
     {
-        for (int i = 2; i < 5; i++)
-        {
-            ActivateQuads(i, false);
-        }
+        UpdateQuadStates();
     }
 
     public void ZoomIn()
     {
-        if (_zoomLevel < 4) 
+        if (ZoomLevel < 4) 
         {
-            HideNames(ZoomLevel);
-            _zoomLevel++;
-            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
-            ActivateQuads(_zoomLevel,true);
+            ZoomLevel++;
+            Camera.orthographicSize = ZoomDistances[ZoomLevel - 1];
+            UpdateQuadStates();
         }
     }
 
@@ -46,28 +42,15 @@ public class MapZoomer : MonoBehaviour
     {
         if (_zoomLevel > 1) 
         {
-            ActivateQuads(_zoomLevel, false);
-            _zoomLevel--;
-            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
-            ActivateQuads(_zoomLevel, true);
+            ZoomLevel--;
+            Camera.orthographicSize = ZoomDistances[ZoomLevel - 1];
+            UpdateQuadStates();
         }
     }
 
-    public void ActivateQuads(int level, bool activate)
+    void UpdateQuadStates()
     {
-        Linker.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
-        foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
-        {
-            quad.EnableTextIfAlreadyVisible();
-        }
-    }
-
-    public void HideNames(int level)
-    {
-        foreach(QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
-        {
-            quad.DisableText();
-        }
+        Linker.instance.QuadManager.ActivateQuads(ZoomLevel);
     }
 
     private void Update()

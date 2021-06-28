@@ -81,7 +81,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
@@ -125,13 +125,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7738360425708163500}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecd5db760f77ca942b2b281a6e40c9b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ef5531d66cb6a541b3842aad6093ef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Transform: {fileID: 2728846329958483654}
-  QuadShakeStrength: 0.5
-  TextShakeStrength: 5
-  Collider: {fileID: 6821065305385666240}
+  _transform: {fileID: 2728846329958483654}
+  _quadShakeStrength: 1
+  _textShakeStrength: 1
   Text: {fileID: 0}
   quadName: 
   textPosition: {x: 0, y: 0, z: 0}

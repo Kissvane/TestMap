@@ -18,6 +18,7 @@ public class MoveCamera : MonoBehaviour
 
     Vector3 velocity = Vector3.zero;
 
+    [SerializeField]
     Vector3 target;
     [SerializeField]
     Vector3 move;
@@ -60,9 +61,11 @@ public class MoveCamera : MonoBehaviour
         }
 
         //ease in and out on camera movement
-        if (Transform.position != target)
+        //approximation problem between vectors due to SmoothDamp
+        if (!Mathf.Approximately(Transform.position.x, target.x) || !Mathf.Approximately(Transform.position.y, target.y) || !Mathf.Approximately(Transform.position.z, target.z))
         {
             Transform.position = Vector3.SmoothDamp(Transform.position, target, ref velocity, 0.25f);
+            Linker.instance.QuadManager.OptimizedTestVisibility();
         }
     }
 }

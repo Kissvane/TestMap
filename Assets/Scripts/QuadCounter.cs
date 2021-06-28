@@ -21,14 +21,12 @@ public class QuadCounter : MonoBehaviour
     public void ShowResult()
     {
         int visible = 0;
-        for (int i = 0; i < Linker.instance.MapConstructor.Levels.Count; i++)
+
+        foreach (QuadData quad in Linker.instance.QuadManager.datas)
         {
-            foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[i])
+            if (quad.IsVisibleThisFrame && quad.IsActivated)
             {
-                if (quad.Renderer.isVisible)
-                {
-                    visible++;
-                }
+                visible++;
             }
         }
 

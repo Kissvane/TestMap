@@ -4,62 +4,34 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class QuadBehaviour : MonoBehaviour
+public class QuadBehaviour : AbstractQuad
 {
     [SerializeField]
-    Transform Transform;
+    Transform _transform;
+    public Transform Transform { get => _transform; private set => _transform = value; }
     [SerializeField]
-    float QuadShakeStrength = 1f;
+    Text _text;
+    public Text Text { get => _text; set => _text = value; }
+
     [SerializeField]
-    float TextShakeStrength = 1f;
-    [SerializeField]
-    Text Text;
-    [SerializeField]
-    string quadName;
-    [SerializeField]
-    Vector3 textPosition;
-    [SerializeField]
-    Vector3 textScale;
-    [SerializeField]
-    Vector3 initialPosition;
-    [SerializeField]
-    private int level;
-    public int Level { get => level; private set => level = value; }
+    SpriteRenderer _renderer;
+    public SpriteRenderer Renderer { get => _renderer; private set => _renderer = value; }
     
     [SerializeField]
-    Renderer _renderer;
-    public Renderer Renderer { get => _renderer; private set => _renderer = value; }
-    
+    QuadData quadData;
+    public QuadData QuadData { get => quadData; private set => quadData = value; }
+
+    [SerializeField]
+    Material GlowMaterial;
+    [SerializeField]
+    Material Default;
+
+    [SerializeField]
+    Sprite BorderSprite;
+    [SerializeField]
+    Sprite BorderlesSprite;
+
     bool isShaking = false;
-
-    
-    public Renderer GetRenderer()
-    {
-        return Renderer;
-    }
-
-    void OnBecameVisible()
-    {
-        if (Linker.instance.MapZoomer.ZoomLevel == level) 
-        {
-            GetFromPool();
-        }
-    }
-
-    void OnBecameInvisible()
-    {
-        GiveToPool();
-    }
-
-    void OnDisable()
-    {
-        GiveToPool();
-        if (isShaking)
-        {
-            DOTween.Kill(Transform);
-            ResetQuadPosition();
-        }
-    }
 
     public void DisableText()
     {
@@ -68,25 +40,25 @@ public class QuadBehaviour : MonoBehaviour
 
     public void EnableTextIfAlreadyVisible()
     {
-        if (Renderer.isVisible && Linker.instance.MapZoomer.ZoomLevel == level)
+        if (Renderer.isVisible && Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
         {
             GetFromPool();
         }
     }
 
-    void GetFromPool()
+    public void GetFromPool()
     {
         //Get Text from object pooler
-        Text = Linker.instance.Pool.Pull();
+        Text = Linker.instance.TextPool.Pull();
         //set the wanted scale and position
         Transform textTransform = Text.transform;
-        textTransform.localPosition = textPosition;
-        textTransform.localScale = textScale;
-        Text.text = quadName;
+        textTransform.localPosition = quadData.textPosition;
+        textTransform.localScale = quadData.textScale;
+        Text.text = quadData.Name;
         Text.gameObject.SetActive(true);
     }
 
-    void GiveToPool()
+    public void GiveToPool()
     {
         if (Text != null) 
         {
@@ -95,20 +67,20 @@ public class QuadBehaviour : MonoBehaviour
                 DOTween.Kill(Text.rectTransform);
             }
             //release the text to the object pooler
-            Linker.instance.Pool.Release(Text);
+            Linker.instance.TextPool.Release(Text);
             //disable it
             Text = null;
         }
     }
 
-    public void Initialize(Transform toCopy, string quadName, int level)
+    /*public void Initialize(Transform toCopy, string quadName, int level)
     {
         textPosition = toCopy.localPosition;
         textScale = toCopy.localScale;
         this.quadName = quadName;
         initialPosition = Transform.localPosition;
         Level = level;
-    }
+    }*/
 
     public void ClickFeedback()
     {
@@ -119,19 +91,50 @@ public class QuadBehaviour : MonoBehaviour
         ResetTextPosition();
         isShaking = true;
         //shake the Quad
-        textTransform.DOShakeAnchorPos(0.5f, TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
-        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
+        textTransform.DOShakeAnchorPos(0.5f, quadData.TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
+        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * quadData.QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
         Linker.instance.QuadCounter.ShowResult();
     }
 
     void ResetTextPosition()
     {
         isShaking = false;
-        Text.transform.localPosition = textPosition;
+        Text.transform.localPosition = quadData.textPosition;
     }
 
     void ResetQuadPosition()
     {
-        Transform.localPosition = initialPosition;
+        Transform.localPosition = quadData.Position;
+    }
+
+    public void UseDatas(QuadData data)
+    {
+        QuadData = data;
+        gameObject.SetActive(true);
+        Transform.localPosition = quadData.Position;
+        Transform.localScale = quadData.Scale;
+        Renderer.sortingOrder = quadData.Level - 1;
+        Renderer.sprite = quadData.Borders ? BorderSprite : BorderlesSprite;
+        Renderer.color = QuadData.Color;
+        if (quadData.Glow)
+        {
+            Renderer.material = GlowMaterial;
+        }
+        if (Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
+        {
+            GetFromPool();
+        }
+        else
+        {
+            DisableText();
+        }
+    }
+
+    public void ClearData()
+    {
+        QuadData = null;
+        Renderer.material = Default;
+        GiveToPool();
+        gameObject.SetActive(false);
     }
 }
