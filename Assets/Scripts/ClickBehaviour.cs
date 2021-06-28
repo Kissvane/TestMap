@@ -23,6 +23,7 @@ public class ClickBehaviour : MonoBehaviour
             RaycastHit2D[] rayHits = Physics2D.GetRayIntersectionAll(Camera.main.ScreenPointToRay(Input.mousePosition), 1000f, LayerMask);
             if (rayHits.Length > 0)
             {
+                //Debug.Log(rayHits[0].collider.name);
                 RaycastHit2D rayHit = rayHits.OrderByDescending(x => x.collider.GetComponent<QuadBehaviour>().QuadData.Level).First();
                 if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().QuadData.Level) == Linker.instance.MapZoomer.ZoomLevel) 
                 {

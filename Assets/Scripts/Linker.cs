@@ -28,11 +28,13 @@ public class Linker : MonoBehaviour
     MapData quadManager;
     public MapData QuadManager { get => quadManager; private set => quadManager = value; }
 
+    [SerializeField]
+    MoveCamera moveCamera;
+    public MoveCamera MoveCamera { get => moveCamera; private set => moveCamera = value; }
+
     #region singleton
     static Linker _instance;
     public static Linker instance { get { return _instance; } }
-
-
 
     Linker()
     {

@@ -23,6 +23,15 @@ public class MoveCamera : MonoBehaviour
     [SerializeField]
     Vector3 move;
 
+    Vector3 lastPosition;
+
+    [SerializeField]
+    float minimalDistance = 0.3f;
+
+    float updateTreshhold = 0.1f;
+
+    float currentDistance = 0f;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -44,6 +53,12 @@ public class MoveCamera : MonoBehaviour
         move.y = value;
     }
 
+    public void StopCamera()
+    {
+        move = Vector3.zero;
+        Transform.position = target;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -62,10 +77,21 @@ public class MoveCamera : MonoBehaviour
 
         //ease in and out on camera movement
         //approximation problem between vectors due to SmoothDamp
-        if (!Mathf.Approximately(Transform.position.x, target.x) || !Mathf.Approximately(Transform.position.y, target.y) || !Mathf.Approximately(Transform.position.z, target.z))
+        if (Transform.position != target)
         {
+            if (Vector3.Distance(Transform.position, target) <= minimalDistance)
+            {
+                Transform.position = target;
+            }
             Transform.position = Vector3.SmoothDamp(Transform.position, target, ref velocity, 0.25f);
-            Linker.instance.QuadManager.OptimizedTestVisibility();
+            currentDistance += Vector3.Distance(Transform.position, lastPosition); 
+            if (currentDistance >= updateTreshhold*Linker.instance.MapZoomer.Camera.orthographicSize) 
+            {
+                currentDistance = 0f;
+                Linker.instance.QuadManager.RecursiveTestVisibility(true);
+            }
         }
+
+        lastPosition = Transform.position;
     }
 }

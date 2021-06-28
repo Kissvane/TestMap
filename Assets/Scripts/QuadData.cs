@@ -60,7 +60,7 @@ public class QuadData
     [SerializeField]
     private bool isActivated = false;
     public bool IsActivated { get => isActivated; set => isActivated = value; }
-    
+
     [SerializeField]
     private bool glow = false;
     public bool Glow { get => glow; set => glow = value; }

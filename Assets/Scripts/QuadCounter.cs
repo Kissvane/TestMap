@@ -18,14 +18,17 @@ public class QuadCounter : MonoBehaviour
     [SerializeField]
     Ease Ease;
 
+    public List<QuadData> test;
+
     public void ShowResult()
     {
         int visible = 0;
-
+        test.Clear();
         foreach (QuadData quad in Linker.instance.QuadManager.datas)
         {
             if (quad.IsVisibleThisFrame && quad.IsActivated)
             {
+                test.Add(quad);
                 visible++;
             }
         }

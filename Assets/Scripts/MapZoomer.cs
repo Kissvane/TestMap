@@ -32,6 +32,7 @@ public class MapZoomer : MonoBehaviour
         if (ZoomLevel < 4) 
         {
             ZoomLevel++;
+            Linker.instance.MoveCamera.StopCamera();
             Camera.orthographicSize = ZoomDistances[ZoomLevel - 1];
             UpdateQuadStates();
         }
@@ -43,6 +44,7 @@ public class MapZoomer : MonoBehaviour
         if (_zoomLevel > 1) 
         {
             ZoomLevel--;
+            Linker.instance.MoveCamera.StopCamera();
             Camera.orthographicSize = ZoomDistances[ZoomLevel - 1];
             UpdateQuadStates();
         }

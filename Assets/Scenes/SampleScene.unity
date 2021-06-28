@@ -3172,6 +3172,7 @@ MonoBehaviour:
   Popup: {fileID: 1108350412}
   MoveSpeed: 100
   Ease: 34
+  test: []
 --- !u!1 &382961277
 GameObject:
   m_ObjectHideFlags: 0
@@ -3221,6 +3222,7 @@ MonoBehaviour:
   quadPool: {fileID: 912314615}
   quadCounter: {fileID: 381080141}
   quadManager: {fileID: 912314613}
+  moveCamera: {fileID: 963194229}
 --- !u!1001 &398374717
 PrefabInstance:
   m_ObjectHideFlags: 0
