@@ -1,10 +1,6 @@
-bug des noms qui reapparaissent pas en remontant
-Documentation
-faire une version alternative du projet avec URP et le glow
-Code cleaning
+faire un diagram de classe pour l'application
 
 ameliorations
 
 ECS
-
 Mise en place d'un système d'object pooling pour les quads

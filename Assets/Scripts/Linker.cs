@@ -5,8 +5,8 @@ using UnityEngine;
 public class Linker : MonoBehaviour
 {
     [SerializeField]
-    MapConstructor mapConstructor;
-    public MapConstructor MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
+    MapBuilder mapConstructor;
+    public MapBuilder MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
 
     [SerializeField]
     MapZoomer mapZoomer;

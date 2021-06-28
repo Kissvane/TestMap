@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MapConstructor : MonoBehaviour
+public class MapBuilder : MonoBehaviour
 {
 
     #region Variables
