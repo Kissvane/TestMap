@@ -51,7 +51,7 @@ public class QuadData
     
     [SerializeField]
     private Color color;
-    public Color Color { get => color; private set => color = value; }
+    public Color Color { get => color; set => color = value; }
     
     [SerializeField]
     private QuadBehaviour quad;
@@ -95,11 +95,11 @@ public class QuadData
         ChildrenIndexes.Add(data);
     }
 
-    public void SetColor(Color color)
-    {
-        Color = color;
-    }
-
+    /// <summary>
+    /// Test if this quadData is visible or not. Get or release a quadBehaviour dependind on the current state
+    /// </summary>
+    /// <param name="testQuad"> quad behaviour used to test if this data is visible or not</param>
+    /// <param name="planes"> camera frustrum </param>
     public void TestVisibility(SetupQuadBehaviour testQuad, Plane[] planes)
     {
         testQuad.Transform.position = Position;
@@ -131,12 +131,19 @@ public class QuadData
         WasVisibleLastFrame = IsVisibleThisFrame;
     }
 
+    /// <summary>
+    /// Use a quad behaviour to visualize this quadData
+    /// </summary>
+    /// <param name="quad">the quad behaviour used</param>
     public void SetQuad(QuadBehaviour quad)
     {
         Quad = quad;
         Quad.UseDatas(this);
     }
 
+    /// <summary>
+    /// release the used quad
+    /// </summary>
     public void UnsetQuad()
     {
         Quad.ClearData();

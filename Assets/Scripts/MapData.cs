@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class QuadManager : MonoBehaviour
+public class MapData : MonoBehaviour
 {
     public Camera Camera;
     public List<QuadData> inProcessDatas;
@@ -16,6 +16,9 @@ public class QuadManager : MonoBehaviour
         datas = null;
     }
 
+    /// <summary>
+    /// store the final datas in an array because it's more performant to use
+    /// </summary>
     public void TransformDatas()
     {
         datas = inProcessDatas.ToArray();
@@ -27,22 +30,20 @@ public class QuadManager : MonoBehaviour
         inProcessDatas[fatherIndex].AddChild(childIndex);
     }
 
-    public void TestVisibility()
-    {
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera);
-
-        foreach (QuadData data in datas)
-        {
-            data.TestVisibility(testQuad, planes);
-        }
-    }
-
+    /// <summary>
+    /// Test the visibility of all quadDatas
+    /// </summary>
     public void OptimizedTestVisibility()
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera);
         DeepTestVisibility(planes, datas[0]);
     }
 
+    /// <summary>
+    /// Test only necessary quads
+    /// </summary>
+    /// <param name="planes">camera frustrum</param>
+    /// <param name="data"> data representing one quad of the map </param>
     public void DeepTestVisibility(Plane[] planes, QuadData data)
     {
         data.TestVisibility(testQuad, planes);
@@ -59,6 +60,10 @@ public class QuadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the IsActivated state of quadDatas using zoom level
+    /// </summary>
+    /// <param name="Level">the zoom level to use</param>
     public void ActivateQuads(int Level)
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera);

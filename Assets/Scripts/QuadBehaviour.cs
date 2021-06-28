@@ -98,6 +98,10 @@ public class QuadBehaviour : AbstractQuad
         Transform.localPosition = quadData.Position;
     }
 
+    /// <summary>
+    /// Use quad data to place and scale this gameObject
+    /// </summary>
+    /// <param name="data"></param>
     public void UseDatas(QuadData data)
     {
         QuadData = data;
