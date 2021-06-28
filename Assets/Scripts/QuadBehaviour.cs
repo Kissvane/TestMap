@@ -52,8 +52,8 @@ public class QuadBehaviour : AbstractQuad
         Text = Linker.instance.TextPool.Pull();
         //set the wanted scale and position
         Transform textTransform = Text.transform;
-        textTransform.localPosition = quadData.textPosition;
-        textTransform.localScale = quadData.textScale;
+        textTransform.localPosition = quadData.TextPosition;
+        textTransform.localScale = quadData.TextScale;
         Text.text = quadData.Name;
         Text.gameObject.SetActive(true);
     }
@@ -73,15 +73,6 @@ public class QuadBehaviour : AbstractQuad
         }
     }
 
-    /*public void Initialize(Transform toCopy, string quadName, int level)
-    {
-        textPosition = toCopy.localPosition;
-        textScale = toCopy.localScale;
-        this.quadName = quadName;
-        initialPosition = Transform.localPosition;
-        Level = level;
-    }*/
-
     public void ClickFeedback()
     {
         DOTween.Kill(Transform);
@@ -99,7 +90,7 @@ public class QuadBehaviour : AbstractQuad
     void ResetTextPosition()
     {
         isShaking = false;
-        Text.transform.localPosition = quadData.textPosition;
+        Text.transform.localPosition = quadData.TextPosition;
     }
 
     void ResetQuadPosition()

@@ -10,6 +10,12 @@ public class QuadManager : MonoBehaviour
     public QuadData[] datas;
     public SetupQuadBehaviour testQuad;
 
+    public void ClearData()
+    {
+        inProcessDatas.Clear();
+        datas = null;
+    }
+
     public void TransformDatas()
     {
         datas = inProcessDatas.ToArray();
@@ -60,7 +66,6 @@ public class QuadManager : MonoBehaviour
         foreach (QuadData data in datas)
         {
             data.IsActivated = data.Level <= Level;
-            //data.TestVisibility(testQuad, planes);
         }
 
         OptimizedTestVisibility();

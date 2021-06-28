@@ -21,8 +21,6 @@ public class MapBuilder : MonoBehaviour
     Transform NameCanvas;
     [SerializeField]
     Transform SetupCanvas;
-    public List<HashSet<AbstractQuad>> Levels { get => levels; private set => levels = value; }
-    private List<HashSet<AbstractQuad>> levels = new List<HashSet<AbstractQuad>>();
     [SerializeField]
     float ShadeRange = 0.2f;
     [SerializeField]
@@ -32,11 +30,13 @@ public class MapBuilder : MonoBehaviour
     [SerializeField]
     bool GlowMode = false;
 
+    Transform temp;
+
     #endregion
 
     #region monobehaviours callbacks
     // Start is called before the first frame update
-    void Start()
+    /*void Start()
     {
         ConstructLevel1();
         FirstQuad.transform.GetChild(1).SetParent(null);
@@ -49,27 +49,56 @@ public class MapBuilder : MonoBehaviour
         SetupCanvas.gameObject.SetActive(false);
         Linker.instance.QuadManager.TransformDatas();
         Linker.instance.MapZoomer.FirstZoom();
+    }*/
+
+    void Start()
+    {
+        Linker.instance.MapZoomer.FirstZoom();
     }
 
     #endregion
 
     #region constructions functions
+    [ContextMenu("BUILD MAP")]
+    public void BuildMap()
+    {
+        temp = new GameObject("TEMP").transform;
+        LevelsParents.Clear();
+        Linker.instance.QuadManager.ClearData();
+        FirstQuad.transform.SetParent(null);
+
+        for (int i = 0; i < 4; i++)
+        {
+            Transform t = new GameObject("Level" + (i + 1)).transform;
+            t.position = Vector3.zero;
+            t.localScale = Vector3.one;
+            LevelsParents.Add(t);
+        }
+
+        ConstructLevel1();
+        FirstQuad.transform.SetParent(null);
+        SetupCanvas.SetParent(null);
+        foreach (Transform t in LevelsParents)
+        {
+            DestroyImmediate(t.gameObject);
+        }
+        FirstQuad.SetActive(false);
+        SetupCanvas.gameObject.SetActive(false);
+        Linker.instance.QuadManager.TransformDatas();
+        DestroyImmediate(temp.gameObject);
+        Debug.Log("MAP CONSTRUCTED");
+    }
+
     public void ConstructLevel1()
     {
         FirstQuad.transform.localScale = Vector3.one * size;
-        NameCanvas.transform.localScale *= size;
+        NameCanvas.transform.localScale = Vector3.one * 0.001f * size;
 
         FirstQuad.transform.SetParent(LevelsParents[0]);
         FirstQuad.transform.localPosition = new Vector3(FirstQuad.transform.localPosition.x, FirstQuad.transform.localPosition.y, 0f);
         SetupQuadBehaviour behaviour = FirstQuad.GetComponentInChildren<SetupQuadBehaviour>();
-
         QuadData result = GetData(behaviour, "Universe", 1, -1);
-        result.Color = Color.white;
-        
-        Levels.Add(new HashSet<AbstractQuad> { behaviour });
-        Levels.Add(new HashSet<AbstractQuad>());
-        Levels.Add(new HashSet<AbstractQuad>());
-        Levels.Add(new HashSet<AbstractQuad>());
+        result.SetColor(Color.white);
         
         ConstructLevel2(FirstQuad.transform.GetChild(0).GetChild(0), 0,2f,2f);
     }
@@ -88,7 +117,7 @@ public class MapBuilder : MonoBehaviour
                 spriteRenderer.color = Colors[totalIndex];
                 
                 ConstructLevel3(pivot, Linker.instance.QuadManager.inProcessDatas.Count - 1, 16f, 8f, spriteRenderer.color);
-                result.Color = spriteRenderer.color;
+                result.SetColor(spriteRenderer.color);
                 spriteRenderer.transform.localScale *= 1.075f;
                 result.Scale = spriteRenderer.transform.localScale;
             }
@@ -106,7 +135,7 @@ public class MapBuilder : MonoBehaviour
                 int totalIndex;
                 QuadData result = ProcessQuad(parent, fatherIndex,3, 0.9f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = GetRandomShade(parentColor);
-                result.Color = spriteRenderer.color;
+                result.SetColor(spriteRenderer.color);
                 ConstructLevel4(pivot, Linker.instance.QuadManager.inProcessDatas.Count - 1, 3f, 3f, spriteRenderer.color);
             }
         }
@@ -126,20 +155,20 @@ public class MapBuilder : MonoBehaviour
                 int totalIndex;
                 QuadData result = ProcessQuad(parent, fatherIndex,4, 0.7f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = colorParent;
-                result.Color = spriteRenderer.color;
+                result.SetColor(spriteRenderer.color);
                 //HIGHLIGHT this one
                 if (totalIndex == highlighted)
                 {
                     if (GlowMode)
                     {
                         spriteRenderer.material = GlowMaterial;
-                        result.SetGlow();
+                        result.Glow = true;
                     }
                     else 
                     {
                         Color.RGBToHSV(colorParent, out float H, out float S, out float V);
                         spriteRenderer.color = Color.HSVToRGB(H, 0.35f, V);
-                        result.Color = spriteRenderer.color;
+                        result.SetColor(spriteRenderer.color);
                     }
                 }
             }
@@ -162,7 +191,7 @@ public class MapBuilder : MonoBehaviour
     public QuadData ProcessQuad(Transform parent, int fatherIndex,int level, float scaleReduction, float lineNumber, float columnNumber, float lineIndex, float columnIndex, out SpriteRenderer renderer, out Transform nextPivot, out int totalIndex)
     {
         Transform current = Instantiate(QuadPfb, parent).transform;
-        current.localScale /= Mathf.Max(lineNumber, columnNumber);
+        current.localScale = Vector3.one * (1f / Mathf.Max(lineNumber, columnNumber));
         current.localPosition = new Vector3(lineIndex / columnNumber, -columnIndex / lineNumber, 0f);
         current.GetChild(0).localScale *= scaleReduction;
         totalIndex = (int)(lineIndex + columnIndex * lineNumber);
@@ -174,12 +203,14 @@ public class MapBuilder : MonoBehaviour
         constructedQuad.localPosition = new Vector3(constructedQuad.localPosition.x, constructedQuad.localPosition.y, 0f);
         SetupQuadBehaviour behaviour = constructedQuad.GetComponent<SetupQuadBehaviour>();
         QuadData result = GetData(behaviour, level == 3 ? totalIndex.ToString() : GetRandomName(), level, fatherIndex);
-        Levels[level - 1].Add(behaviour);
 
-        Destroy(current.gameObject);
-        Destroy(constructedQuad.GetChild(0).gameObject);
+        DestroyImmediate(current.gameObject);
 
         nextPivot = constructedQuad.GetChild(0);
+        if (nextPivot.name != "InsideCornerPivot")
+        {
+            Debug.Log("ERROR");
+        }
         renderer = r;
 
         Linker.instance.QuadManager.AddToTree(fatherIndex, Linker.instance.QuadManager.inProcessDatas.Count-1);
@@ -194,21 +225,28 @@ public class MapBuilder : MonoBehaviour
     /// <param name="quad"></param>
     public QuadData GetData(SetupQuadBehaviour quad, string quadName, int level, int fatherIndex)
     {
+        temp.SetParent(quad.transform);
+        temp.localPosition = Vector3.zero;
+        temp.localScale = Vector3.one;
+
         SetupCanvas.SetParent(quad.Transform);
         SetupCanvas.localPosition = Vector3.zero;
         SetupCanvas.localScale = Vector3.one * 0.003f;
         Transform textName = SetupCanvas.GetChild(0);
+        textName.localPosition = Vector3.zero;
+        textName.localScale = Vector3.one;
+       
         textName.SetParent(NameCanvas);
+        
         quad.Initialize(textName, quadName, level);
         textName.SetParent(SetupCanvas);
-        Transform oldParent = quad.transform.parent;
-        int oldSiblingIndex = quad.transform.GetSiblingIndex();
-        quad.transform.SetParent(null);
         QuadData result = new QuadData(quad, level != 1);
+        //its impossible to change transform parent of an object inside a prefab when in edit mode
+        //so I use this temporary transform
+        temp.SetParent(null);
+        result.Scale = temp.localScale;
         Linker.instance.QuadManager.inProcessDatas.Add(result);
         result.QuadFatherIndex = fatherIndex;
-        quad.transform.SetParent(oldParent);
-        quad.transform.SetSiblingIndex(oldSiblingIndex);
         return result;
     }
 
