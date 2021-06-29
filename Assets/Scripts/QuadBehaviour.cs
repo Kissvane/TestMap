@@ -33,6 +33,29 @@ public class QuadBehaviour : AbstractQuad
 
     bool isShaking = false;
 
+    void OnBecameVisible()
+    {
+        if (Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
+        {
+            GetFromPool();
+        }
+    }
+
+    void OnBecameInvisible()
+    {
+        GiveToPool();
+    }
+
+    void OnDisable()
+    {
+        GiveToPool();
+        if (isShaking)
+        {
+            DOTween.Kill(Transform);
+            ResetQuadPosition();
+        }
+    }
+
     public void DisableText()
     {
         GiveToPool();
@@ -123,13 +146,5 @@ public class QuadBehaviour : AbstractQuad
         {
             DisableText();
         }
-    }
-
-    public void ClearData()
-    {
-        QuadData = null;
-        Renderer.material = Default;
-        GiveToPool();
-        gameObject.SetActive(false);
     }
 }

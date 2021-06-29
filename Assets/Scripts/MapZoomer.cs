@@ -52,7 +52,7 @@ public class MapZoomer : MonoBehaviour
 
     void UpdateQuadStates()
     {
-        Linker.instance.QuadManager.ActivateQuads(ZoomLevel);
+        Linker.instance.MapData.ActivateQuads(ZoomLevel);
     }
 
     private void Update()

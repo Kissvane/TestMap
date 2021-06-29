@@ -23,12 +23,10 @@ public class QuadCounter : MonoBehaviour
     public void ShowResult()
     {
         int visible = 0;
-        test.Clear();
-        foreach (QuadData quad in Linker.instance.QuadManager.datas)
+        foreach (QuadData quad in Linker.instance.MapData.datas)
         {
-            if (quad.IsVisibleThisFrame && quad.IsActivated)
+            if (quad.Quad.Renderer.isVisible)
             {
-                test.Add(quad);
                 visible++;
             }
         }

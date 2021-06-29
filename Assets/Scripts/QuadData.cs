@@ -24,14 +24,6 @@ public class QuadData
     [SerializeField]
     private bool borders;
     public bool Borders { get => borders; private set => borders = value; }
-
-    [SerializeField]
-    bool wasVisibleLastFrame = false;
-    public bool WasVisibleLastFrame { get => wasVisibleLastFrame; private set => wasVisibleLastFrame = value; }
-
-    [SerializeField]
-    private bool isVisibleThisFrame = false;
-    public bool IsVisibleThisFrame { get => isVisibleThisFrame; private set => isVisibleThisFrame = value; }
     
     [SerializeField]
     private float quadShakeStrength = 1f;
@@ -56,22 +48,10 @@ public class QuadData
     [SerializeField]
     private QuadBehaviour quad;
     public QuadBehaviour Quad { get => quad; private set => quad = value; }
-    
-    [SerializeField]
-    private bool isActivated = false;
-    public bool IsActivated { get => isActivated; set => isActivated = value; }
 
     [SerializeField]
     private bool glow = false;
     public bool Glow { get => glow; set => glow = value; }
-    
-    [SerializeField]
-    private int quadFatherIndex = -1;
-    public int QuadFatherIndex { get => quadFatherIndex; set => quadFatherIndex = value; }
-    
-    [SerializeField]
-    private List<int> childrenIndexes = new List<int>();
-    public List<int> ChildrenIndexes { get => childrenIndexes; private set => childrenIndexes = value; }
 
 
 
@@ -90,47 +70,6 @@ public class QuadData
         TextShakeStrength = quad.TextShakeStrength;
     }
 
-    public void AddChild(int data)
-    {
-        ChildrenIndexes.Add(data);
-    }
-
-    /// <summary>
-    /// Test if this quadData is visible or not. Get or release a quadBehaviour dependind on the current state
-    /// </summary>
-    /// <param name="testQuad"> quad behaviour used to test if this data is visible or not</param>
-    /// <param name="planes"> camera frustrum </param>
-    public void TestVisibility(SetupQuadBehaviour testQuad, Plane[] planes)
-    {
-        testQuad.Transform.position = Position;
-        testQuad.Transform.localScale = Scale;
-        IsVisibleThisFrame = GeometryUtility.TestPlanesAABB(planes, testQuad.Renderer.bounds);
-
-        if (IsActivated && IsVisibleThisFrame)
-        {
-            if (Quad == null)
-            {
-                SetQuad(Linker.instance.QuadPool.Pull());
-            }
-            else
-            {
-                if (Level != Linker.instance.MapZoomer.ZoomLevel && Quad.Text != null)
-                {
-                    Quad.GiveToPool();
-                }
-                else if(Level == Linker.instance.MapZoomer.ZoomLevel && Quad.Text == null)
-                {
-                    Quad.GetFromPool();
-                }
-            }
-        }
-        else if((!IsActivated || !IsVisibleThisFrame) && Quad != null)
-        {
-            UnsetQuad();
-        }
-        WasVisibleLastFrame = IsVisibleThisFrame;
-    }
-
     /// <summary>
     /// Use a quad behaviour to visualize this quadData
     /// </summary>
@@ -139,15 +78,5 @@ public class QuadData
     {
         Quad = quad;
         Quad.UseDatas(this);
-    }
-
-    /// <summary>
-    /// release the used quad
-    /// </summary>
-    public void UnsetQuad()
-    {
-        Quad.ClearData();
-        Linker.instance.QuadPool.Release(Quad);
-        Quad = null;
     }
 }

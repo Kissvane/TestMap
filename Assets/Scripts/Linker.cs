@@ -25,8 +25,8 @@ public class Linker : MonoBehaviour
     public QuadCounter QuadCounter { get => quadCounter; private set => quadCounter = value; }
 
     [SerializeField]
-    MapData quadManager;
-    public MapData QuadManager { get => quadManager; private set => quadManager = value; }
+    MapData mapData;
+    public MapData MapData { get => mapData; private set => mapData = value; }
 
     [SerializeField]
     MoveCamera moveCamera;
