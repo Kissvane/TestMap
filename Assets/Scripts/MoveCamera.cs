@@ -22,6 +22,7 @@ public class MoveCamera : MonoBehaviour
     [SerializeField]
     Vector3 move;
 
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -51,7 +52,7 @@ public class MoveCamera : MonoBehaviour
 #endif
         target.z = Transform.position.z;
         //have a constant move speed in all zoom level
-        float UsedSpeed = Speed * Linker.instance.MapZoomer.Camera.orthographicSize;
+        float UsedSpeed = Speed * GameManager.instance.MapZoomer.Camera.orthographicSize;
 
         if (move != Vector3.zero)
         {

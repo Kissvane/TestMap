@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class MapZoomer : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class MapZoomer : MonoBehaviour
 
     int _zoomLevel = 1;
     public int ZoomLevel { get => _zoomLevel; private set => _zoomLevel = value; }
-    
+
     [SerializeField]
     List<float> ZoomDistances;
 
@@ -20,65 +21,86 @@ public class MapZoomer : MonoBehaviour
     [SerializeField]
     KeyCode ZoomOutKey;
 
-    
+    [SerializeField]
+    Ease Ease;
+
+    [SerializeField]
+    float zoomTime = 0.5f;
+
 
     public void FirstZoom()
     {
-        for (int i = 2; i < 5; i++)
-        {
-            ActivateQuads(i, false);
-        }
+        ActivateQuads(1, true);
     }
 
     public void ZoomIn()
     {
-        if (_zoomLevel < 4) 
+        if (_zoomLevel < 4)
         {
+            GameManager.instance.LockInputs(true);
             HideNames(ZoomLevel);
             _zoomLevel++;
-            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
-            ActivateQuads(_zoomLevel,true);
+            _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
+            StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime+0.1f));
         }
     }
 
-
     public void ZoomOut()
     {
-        if (_zoomLevel > 1) 
+        if (ZoomLevel > 1)
         {
-            ActivateQuads(_zoomLevel, false);
-            _zoomLevel--;
-            _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
-            ActivateQuads(_zoomLevel, true);
+            GameManager.instance.LockInputs(true);
+            ActivateQuads(ZoomLevel, false);
+            ZoomLevel--;
+            _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
+            ActivateQuads(ZoomLevel, true);
+            //StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime+0.1f));
         }
+    }
+
+    void UnlockInputs()
+    {
+        GameManager.instance.LockInputs(false);
+        //ActivateQuads(ZoomLevel, true);
     }
 
     public void ActivateQuads(int level, bool activate)
     {
-        Linker.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
-        foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
+        GameManager.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
+        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
         {
             quad.EnableTextIfAlreadyVisible();
         }
     }
 
+    IEnumerator ActivateQuadsAsync(int level, bool activate, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ActivateQuads(level, activate);
+    }
+
     public void HideNames(int level)
     {
-        foreach(QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
+        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
         {
             quad.DisableText();
         }
     }
 
+#if UNITY_EDITOR || UNITY_STANDALONE
     private void Update()
     {
-        if (Input.GetKeyDown(ZoomInKey))
+        if (!GameManager.instance.LockedInputs) 
         {
-            ZoomIn();
-        }
-        else if (Input.GetKeyDown(ZoomOutKey))
-        {
-            ZoomOut();
+            if (Input.GetKeyDown(ZoomInKey))
+            {
+                ZoomIn();
+            }
+            else if (Input.GetKeyDown(ZoomOutKey))
+            {
+                ZoomOut();
+            }
         }
     }
+#endif
 }

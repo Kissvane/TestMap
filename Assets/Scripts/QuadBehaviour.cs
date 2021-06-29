@@ -4,43 +4,107 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+[System.Serializable]
+public class JsonQuadData
+{
+    public float QuadShakeStrength;
+    public float TextShakeStrength;
+    public string QuadName;
+    public Vector3 TextPosition;
+    public Vector3 TextScale;
+    public Vector3 InitialPosition;
+    public Vector3 Scale;
+    public Color Color;
+    public int Level;
+    public bool Glow;
+
+    public JsonQuadData(QuadBehaviour quad)
+    {
+        QuadShakeStrength = quad.QuadShakeStrength;
+        TextShakeStrength = quad.TextShakeStrength;
+        QuadName = quad.QuadName;
+        TextPosition = quad.TextPosition;
+        TextScale = quad.TextScale;
+        InitialPosition = quad.InitialPosition;
+        Level = quad.Level;
+        Color = quad.Renderer.color;
+        Scale = quad.Transform.lossyScale;
+        Glow = quad.Glow;
+    }
+
+    public JsonQuadData()
+    {
+
+    }
+}
+
 public class QuadBehaviour : MonoBehaviour
 {
     [SerializeField]
-    Transform Transform;
+    Transform _transform;
+    public Transform Transform { get => _transform; private set => _transform = value; }
+
     [SerializeField]
-    float QuadShakeStrength = 1f;
+    float quadShakeStrength = 1f;
+    public float QuadShakeStrength { get => quadShakeStrength; private set => quadShakeStrength = value; }
+    
     [SerializeField]
-    float TextShakeStrength = 1f;
+    float textShakeStrength = 1f;
+    public float TextShakeStrength { get => textShakeStrength; private set => textShakeStrength = value; }
+    
     [SerializeField]
     Text Text;
+    
     [SerializeField]
     string quadName;
+    public string QuadName { get => quadName; private set => quadName = value; }
+    
     [SerializeField]
     Vector3 textPosition;
+    public Vector3 TextPosition { get => textPosition; private set => textPosition = value; }
+    
     [SerializeField]
     Vector3 textScale;
+    public Vector3 TextScale { get => textScale; private set => textScale = value; }
+    
     [SerializeField]
     Vector3 initialPosition;
+    public Vector3 InitialPosition { get => initialPosition; private set => initialPosition = value; }
+
     [SerializeField]
     private int level;
     public int Level { get => level; private set => level = value; }
-    
+
     [SerializeField]
-    Renderer _renderer;
-    public Renderer Renderer { get => _renderer; private set => _renderer = value; }
+    private bool glow;
+    public bool Glow { get => glow; set => glow = value; }
+
+    [SerializeField]
+    SpriteRenderer _renderer;
+    public SpriteRenderer Renderer { get => _renderer; private set => _renderer = value; }
     
+
     bool isShaking = false;
 
-    
-    public Renderer GetRenderer()
+    public void JsonInitialisation(JsonQuadData jsondata)
     {
-        return Renderer;
+        QuadShakeStrength = jsondata.QuadShakeStrength;
+        TextShakeStrength = jsondata.TextShakeStrength;
+        QuadName = jsondata.QuadName;
+        TextPosition = jsondata.TextPosition;
+        TextScale = jsondata.TextScale;
+        InitialPosition = jsondata.InitialPosition;
+        Transform.position = initialPosition;
+        Renderer.color = jsondata.Color;
+        Level = jsondata.Level;
+        Transform.localScale = jsondata.Scale;
+        Glow = jsondata.Glow;
+        Renderer.sortingOrder = Level - 1;
     }
 
     void OnBecameVisible()
     {
-        if (Linker.instance.MapZoomer.ZoomLevel == level) 
+        if (GameManager.instance.MapZoomer.ZoomLevel == level) 
         {
             GetFromPool();
         }
@@ -68,7 +132,7 @@ public class QuadBehaviour : MonoBehaviour
 
     public void EnableTextIfAlreadyVisible()
     {
-        if (Renderer.isVisible && Linker.instance.MapZoomer.ZoomLevel == level)
+        if (Renderer.isVisible && GameManager.instance.MapZoomer.ZoomLevel == level)
         {
             GetFromPool();
         }
@@ -77,12 +141,12 @@ public class QuadBehaviour : MonoBehaviour
     void GetFromPool()
     {
         //Get Text from object pooler
-        Text = Linker.instance.Pool.Pull();
+        Text = GameManager.instance.Pool.Pull();
         //set the wanted scale and position
         Transform textTransform = Text.transform;
-        textTransform.localPosition = textPosition;
-        textTransform.localScale = textScale;
-        Text.text = quadName;
+        textTransform.localPosition = TextPosition;
+        textTransform.localScale = TextScale;
+        Text.text = QuadName;
         Text.gameObject.SetActive(true);
     }
 
@@ -95,7 +159,7 @@ public class QuadBehaviour : MonoBehaviour
                 DOTween.Kill(Text.rectTransform);
             }
             //release the text to the object pooler
-            Linker.instance.Pool.Release(Text);
+            GameManager.instance.Pool.Release(Text);
             //disable it
             Text = null;
         }
@@ -103,10 +167,10 @@ public class QuadBehaviour : MonoBehaviour
 
     public void Initialize(Transform toCopy, string quadName, int level)
     {
-        textPosition = toCopy.localPosition;
-        textScale = toCopy.localScale;
-        this.quadName = quadName;
-        initialPosition = Transform.localPosition;
+        TextPosition = toCopy.localPosition;
+        TextScale = toCopy.localScale;
+        this.QuadName = quadName;
+        InitialPosition = Transform.localPosition;
         Level = level;
     }
 
@@ -121,17 +185,17 @@ public class QuadBehaviour : MonoBehaviour
         //shake the Quad
         textTransform.DOShakeAnchorPos(0.5f, TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
         Transform.DOShakePosition(0.5f, Transform.lossyScale.x * QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
-        Linker.instance.QuadCounter.ShowResult();
+        GameManager.instance.QuadCounter.ShowResult();
     }
 
     void ResetTextPosition()
     {
         isShaking = false;
-        Text.transform.localPosition = textPosition;
+        Text.transform.localPosition = TextPosition;
     }
 
     void ResetQuadPosition()
     {
-        Transform.localPosition = initialPosition;
+        Transform.localPosition = InitialPosition;
     }
 }

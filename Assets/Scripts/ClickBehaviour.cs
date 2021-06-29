@@ -24,7 +24,7 @@ public class ClickBehaviour : MonoBehaviour
             if (rayHits.Length > 0)
             {
                 RaycastHit2D rayHit = rayHits.OrderByDescending(x => x.collider.GetComponent<QuadBehaviour>().Level).First();
-                if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().Level) == Linker.instance.MapZoomer.ZoomLevel) 
+                if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().Level) == GameManager.instance.MapZoomer.ZoomLevel) 
                 {
                     rayHit.collider.gameObject.GetComponent<QuadBehaviour>().ClickFeedback();
                 }

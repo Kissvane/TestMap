@@ -21,9 +21,9 @@ public class QuadCounter : MonoBehaviour
     public void ShowResult()
     {
         int visible = 0;
-        for (int i = 0; i < Linker.instance.MapConstructor.Levels.Count; i++)
+        for (int i = 0; i < GameManager.instance.MapConstructor.Levels.Count; i++)
         {
-            foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[i])
+            foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[i])
             {
                 if (quad.Renderer.isVisible)
                 {
