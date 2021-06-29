@@ -23,11 +23,14 @@ public class QuadCounter : MonoBehaviour
     public void ShowResult()
     {
         int visible = 0;
-        foreach (QuadData quad in Linker.instance.MapData.datas)
+        foreach (QuadData[] array in GameManager.instance.MapData.Levels)
         {
-            if (quad.Quad.Renderer.isVisible)
+            foreach (QuadData quad in array) 
             {
-                visible++;
+                if (quad.Quad.Renderer.isVisible)
+                {
+                    visible++;
+                }
             }
         }
 

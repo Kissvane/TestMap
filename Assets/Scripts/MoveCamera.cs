@@ -29,10 +29,6 @@ public class MoveCamera : MonoBehaviour
     float minimalDistance = 0.1f;
 
     // Start is called before the first frame update
-    void Awake()
-    {
-        UpdateTarget();
-    }
 
     public void UpdateTarget()
     {
@@ -49,12 +45,6 @@ public class MoveCamera : MonoBehaviour
         move.y = value;
     }
 
-    public void StopCamera()
-    {
-        move = Vector3.zero;
-        Transform.position = target;
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -63,7 +53,7 @@ public class MoveCamera : MonoBehaviour
 #endif
         target.z = Transform.position.z;
         //have a constant move speed in all zoom level
-        float UsedSpeed = Speed * Linker.instance.MapZoomer.Camera.orthographicSize;
+        float UsedSpeed = Speed * GameManager.instance.MapZoomer.Camera.orthographicSize;
 
         if (move != Vector3.zero)
         {
@@ -75,7 +65,7 @@ public class MoveCamera : MonoBehaviour
         //approximation problem between vectors due to SmoothDamp
         if (Transform.position != target)
         {
-            if (Vector3.Distance(Transform.position, target) <= minimalDistance * Linker.instance.MapZoomer.Camera.orthographicSize)
+            if (Vector3.Distance(Transform.position, target) <= minimalDistance * GameManager.instance.MapZoomer.Camera.orthographicSize)
             {
                 Transform.position = target;
             }

@@ -35,7 +35,7 @@ public class QuadBehaviour : AbstractQuad
 
     void OnBecameVisible()
     {
-        if (Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
+        if (GameManager.instance.MapZoomer.ZoomLevel == quadData.Level)
         {
             GetFromPool();
         }
@@ -63,7 +63,7 @@ public class QuadBehaviour : AbstractQuad
 
     public void EnableTextIfAlreadyVisible()
     {
-        if (Renderer.isVisible && Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
+        if (Renderer.isVisible && GameManager.instance.MapZoomer.ZoomLevel == quadData.Level)
         {
             GetFromPool();
         }
@@ -72,7 +72,7 @@ public class QuadBehaviour : AbstractQuad
     public void GetFromPool()
     {
         //Get Text from object pooler
-        Text = Linker.instance.TextPool.Pull();
+        Text = GameManager.instance.TextPool.Pull();
         //set the wanted scale and position
         Transform textTransform = Text.transform;
         textTransform.localPosition = quadData.TextPosition;
@@ -90,7 +90,7 @@ public class QuadBehaviour : AbstractQuad
                 DOTween.Kill(Text.rectTransform);
             }
             //release the text to the object pooler
-            Linker.instance.TextPool.Release(Text);
+            GameManager.instance.TextPool.Release(Text);
             //disable it
             Text = null;
         }
@@ -107,7 +107,7 @@ public class QuadBehaviour : AbstractQuad
         //shake the Quad
         textTransform.DOShakeAnchorPos(0.5f, quadData.TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
         Transform.DOShakePosition(0.5f, Transform.lossyScale.x * quadData.QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
-        Linker.instance.QuadCounter.ShowResult();
+        GameManager.instance.QuadCounter.ShowResult();
     }
 
     void ResetTextPosition()
@@ -138,7 +138,7 @@ public class QuadBehaviour : AbstractQuad
         {
             Renderer.material = GlowMaterial;
         }
-        if (Linker.instance.MapZoomer.ZoomLevel == quadData.Level)
+        if (GameManager.instance.MapZoomer.ZoomLevel == quadData.Level)
         {
             GetFromPool();
         }

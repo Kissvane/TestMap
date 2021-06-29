@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
@@ -36,30 +37,20 @@ public class MapBuilder : MonoBehaviour
 
     #endregion
 
-    #region monobehaviours callbacks
-
-    void Start()
-    {
-        Linker.instance.MapZoomer.FirstZoom();
-    }
-
-    #endregion
-
     #region constructions functions
     [ContextMenu("BUILD MAP")]
     public void BuildMap()
     {
         //initialization phase
         temp = new GameObject("TEMP").transform;
-        LevelsParents.Clear();
-        Linker.instance.MapData.ClearData();
-        FirstQuad.transform.SetParent(null);
-
         //destroy previously created objects
         foreach (Transform t in LevelsParents)
         {
-            DestroyImmediate(t.gameObject);
+            if(t != null) DestroyImmediate(t.gameObject);
         }
+        LevelsParents.Clear();
+        GameManager.instance.MapData.ClearData();
+        FirstQuad.transform.SetParent(null);
 
         for (int i = 0; i < 4; i++)
         {
@@ -81,6 +72,7 @@ public class MapBuilder : MonoBehaviour
         {
             DestroyImmediate(t.gameObject);
         }
+        LevelsParents.Clear();
         DestroyImmediate(temp.gameObject);
 
         //hide these construction useful object because they are useless in runtime
@@ -95,16 +87,22 @@ public class MapBuilder : MonoBehaviour
             LevelsParents.Add(t);
         }
 
-        //data final process
-        Linker.instance.MapData.TransformDatas();
+        //data process
+        GameManager.instance.MapData.TransformDatas();
 
-        foreach (QuadData data in Linker.instance.MapData.datas)
+        foreach (QuadData data in GameManager.instance.MapData.datas)
         {
-            GameObject go = Instantiate(QuadPfb, LevelsParents[data.Level]);
-            QuadBehaviour quad = go.GetComponent<QuadBehaviour>();
-            quad.UseDatas(data);
+            GameObject go = Instantiate(QuadPfb, LevelsParents[data.Level-1]);
+            data.SetQuad(go.GetComponent<QuadBehaviour>());
         }
 
+        //disabled the built objects
+        foreach (Transform t in LevelsParents)
+        {
+            t.gameObject.SetActive(false);
+        }
+
+        GameManager.instance.MapData.ClearData();
         Debug.Log("MAP CONSTRUCTED");
     }
 
@@ -135,7 +133,7 @@ public class MapBuilder : MonoBehaviour
                 QuadData result = ProcessQuad(parent, fatherIndex,2, 0.925f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = Colors[totalIndex];
                 
-                ConstructLevel3(pivot, Linker.instance.MapData.inProcessDatas.Count - 1, 16f, 8f, spriteRenderer.color);
+                ConstructLevel3(pivot, GameManager.instance.MapData.inProcessDatas.Count - 1, 16f, 8f, spriteRenderer.color);
                 result.Color = spriteRenderer.color;
                 spriteRenderer.transform.localScale *= 1.075f;
                 result.Scale = spriteRenderer.transform.localScale;
@@ -155,7 +153,7 @@ public class MapBuilder : MonoBehaviour
                 QuadData result = ProcessQuad(parent, fatherIndex,3, 0.9f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
                 spriteRenderer.color = GetRandomShade(parentColor);
                 result.Color = spriteRenderer.color;
-                ConstructLevel4(pivot, Linker.instance.MapData.inProcessDatas.Count - 1, 3f, 3f, spriteRenderer.color);
+                ConstructLevel4(pivot, GameManager.instance.MapData.inProcessDatas.Count - 1, 3f, 3f, spriteRenderer.color);
             }
         }
 
@@ -268,7 +266,7 @@ public class MapBuilder : MonoBehaviour
         //so I use this temporary transform to store the right scale
         result.Scale = temp.localScale;
         //store the quadData in a temp list
-        Linker.instance.MapData.inProcessDatas.Add(result);
+        GameManager.instance.MapData.inProcessDatas.Add(result);
         return result;
     }
 

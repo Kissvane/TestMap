@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Linker : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    MapBuilder mapConstructor;
-    public MapBuilder MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
+    MapBuilder mapBuilder;
+    public MapBuilder MapBuilder { get => mapBuilder; private set => mapBuilder = value; }
 
     [SerializeField]
     MapZoomer mapZoomer;
@@ -33,10 +33,10 @@ public class Linker : MonoBehaviour
     public MoveCamera MoveCamera { get => moveCamera; private set => moveCamera = value; }
 
     #region singleton
-    static Linker _instance;
-    public static Linker instance { get { return _instance; } }
+    static GameManager _instance;
+    public static GameManager instance { get { return _instance; } }
 
-    Linker()
+    GameManager()
     {
         _instance = this;
     }
@@ -48,6 +48,12 @@ public class Linker : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        TextPool.DisableAllObject();
+        MapData.Initialize();
+        MapZoomer.FirstZoom();
+        MoveCamera.UpdateTarget();
     }
     #endregion
+
 }
