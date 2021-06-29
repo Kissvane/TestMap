@@ -4,8 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+/// <summary>
+/// Manage quad visual aspect (scale, position, color ...) and behaviour
+/// </summary>
 public class QuadBehaviour : AbstractQuad
 {
+    #region variables
     [SerializeField]
     Transform _transform;
     public Transform Transform { get => _transform; private set => _transform = value; }
@@ -32,9 +36,12 @@ public class QuadBehaviour : AbstractQuad
     Sprite BorderlesSprite;
 
     bool isShaking = false;
+    #endregion
 
+    #region text management
     void OnBecameVisible()
     {
+        //show the name of the quad if his zoom level is the application zoom level
         if (GameManager.instance.MapZoomer.ZoomLevel == quadData.Level)
         {
             GetFromPool();
@@ -49,6 +56,7 @@ public class QuadBehaviour : AbstractQuad
     void OnDisable()
     {
         GiveToPool();
+        //if the quad is shaking stop it
         if (isShaking)
         {
             DOTween.Kill(Transform);
@@ -69,6 +77,9 @@ public class QuadBehaviour : AbstractQuad
         }
     }
 
+    /// <summary>
+    /// get a text from the pool and apply the settings on it to make it look like this quad name's
+    /// </summary>
     public void GetFromPool()
     {
         //Get Text from object pooler
@@ -81,6 +92,9 @@ public class QuadBehaviour : AbstractQuad
         Text.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Release this quad name to the pool
+    /// </summary>
     public void GiveToPool()
     {
         if (Text != null) 
@@ -95,19 +109,24 @@ public class QuadBehaviour : AbstractQuad
             Text = null;
         }
     }
+    #endregion
 
+    /// <summary>
+    /// Manage the click feedback
+    /// </summary>
     public void ClickFeedback()
     {
+        //stop previous shaking if they exists
         DOTween.Kill(Transform);
         RectTransform textTransform = Text.rectTransform;
         DOTween.Kill(textTransform.transform);
+        //reset quad and text position to prevent displacement when clicking multiple times
         ResetQuadPosition();
         ResetTextPosition();
         isShaking = true;
-        //shake the Quad
+        //shake the Quad and his name
         textTransform.DOShakeAnchorPos(0.5f, quadData.TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
         Transform.DOShakePosition(0.5f, Transform.lossyScale.x * quadData.QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
-        GameManager.instance.QuadCounter.ShowResult();
     }
 
     void ResetTextPosition()
@@ -122,9 +141,9 @@ public class QuadBehaviour : AbstractQuad
     }
 
     /// <summary>
-    /// Use quad data to place and scale this gameObject
+    /// Use QuadData datas to place, scale and modify visual of this gameObject
     /// </summary>
-    /// <param name="data"></param>
+    /// <param name="data">used QuadData</param>
     public void UseDatas(QuadData data)
     {
         QuadData = data;

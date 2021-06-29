@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Manage camera movement
+/// </summary>
 public class MoveCamera : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     Transform Transform;
 
@@ -22,19 +24,17 @@ public class MoveCamera : MonoBehaviour
     Vector3 target;
     [SerializeField]
     Vector3 move;
-
-    Vector3 lastPosition;
-
     [SerializeField]
     float minimalDistance = 0.1f;
+    #endregion
 
-    // Start is called before the first frame update
-
+    //initialize target value
     public void UpdateTarget()
     {
         target = Transform.position;
     }
 
+    #region mobile UI functions
     public void SetMoveX(int value)
     {
         move.x = value;
@@ -44,8 +44,8 @@ public class MoveCamera : MonoBehaviour
     {
         move.y = value;
     }
+    #endregion
 
-    // Update is called once per frame
     void Update()
     {
 #if (!UNITY_IOS && !UNITY_ANDROID) || UNITY_EDITOR
@@ -71,7 +71,5 @@ public class MoveCamera : MonoBehaviour
             }
             Transform.position = Vector3.SmoothDamp(Transform.position, target, ref velocity, 0.25f);
         }
-
-        lastPosition = Transform.position;
     }
 }

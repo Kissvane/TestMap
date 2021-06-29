@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Coordinate application start and collect scripts to manage dependencies
+/// </summary>
 public class GameManager : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     MapBuilder mapBuilder;
     public MapBuilder MapBuilder { get => mapBuilder; private set => mapBuilder = value; }
@@ -31,6 +35,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     MoveCamera moveCamera;
     public MoveCamera MoveCamera { get => moveCamera; private set => moveCamera = value; }
+    #endregion
 
     #region singleton
     static GameManager _instance;

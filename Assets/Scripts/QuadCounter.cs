@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+/// <summary>
+/// Count the quads visible on the screen
+/// </summary>
 public class QuadCounter : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     Text Text;
 
@@ -17,15 +21,17 @@ public class QuadCounter : MonoBehaviour
 
     [SerializeField]
     Ease Ease;
+    #endregion
 
-    public List<QuadData> test;
-
+    /// <summary>
+    /// Count the quads visible on screen and show the result
+    /// </summary>
     public void ShowResult()
     {
         int visible = 0;
-        foreach (QuadData[] array in GameManager.instance.MapData.Levels)
+        foreach ( HashSet<QuadData> hashset in GameManager.instance.MapData.Levels.Values)
         {
-            foreach (QuadData quad in array) 
+            foreach (QuadData quad in hashset) 
             {
                 if (quad.Quad.Renderer.isVisible)
                 {
@@ -38,11 +44,17 @@ public class QuadCounter : MonoBehaviour
         PopIn();
     }
 
+    /// <summary>
+    /// animation when the count UI appear
+    /// </summary>
     public void PopIn()
     {
         Popup.DOAnchorPos3DX(0f, MoveSpeed).SetEase(Ease).SetSpeedBased();
     }
 
+    /// <summary>
+    /// animation when the count UI disappear
+    /// </summary>
     public void PopoOut()
     {
         Popup.DOAnchorPos3DX(-Popup.sizeDelta.x, MoveSpeed).SetEase(Ease).SetSpeedBased();

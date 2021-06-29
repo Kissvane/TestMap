@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Datas allowing to build or a reconstruct a quad
+/// </summary>
 [System.Serializable]
 public class QuadData
 {
+    #region variables
     [SerializeField]
     Vector3 position;
     public Vector3 Position { get => position; private set => position = value; }
@@ -52,10 +56,13 @@ public class QuadData
     [SerializeField]
     private bool glow = false;
     public bool Glow { get => glow; set => glow = value; }
+    #endregion
 
-
-
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="quad">datas used to construct this one</param>
+    /// <param name="borders">does this quad have borders</param>
     public QuadData(SetupQuadBehaviour quad, bool borders)
     {
         Position = quad.Transform.position;

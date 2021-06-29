@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manage zoom level
+/// </summary>
 public class MapZoomer : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     Camera _camera;
     public Camera Camera { get => _camera; private set => _camera = value; }
@@ -19,6 +23,7 @@ public class MapZoomer : MonoBehaviour
 
     [SerializeField]
     KeyCode ZoomOutKey;
+    #endregion
 
     public void FirstZoom()
     {
@@ -50,7 +55,7 @@ public class MapZoomer : MonoBehaviour
     public void ActivateQuads(int level, bool activate)
     {
         GameManager.instance.MapBuilder.LevelsParents[level - 1].gameObject.SetActive(activate);
-        foreach (QuadData data in GameManager.instance.MapData.Levels[level - 1])
+        foreach (QuadData data in GameManager.instance.MapData.Levels[level])
         {
             data.Quad.EnableTextIfAlreadyVisible();
         }
@@ -58,7 +63,7 @@ public class MapZoomer : MonoBehaviour
 
     public void HideNames(int level)
     {
-        foreach (QuadData data in GameManager.instance.MapData.Levels[level - 1])
+        foreach (QuadData data in GameManager.instance.MapData.Levels[level])
         {
             data.Quad.DisableText();
         }

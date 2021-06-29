@@ -4,8 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+/// <summary>
+/// Object used to construct the map
+/// </summary>
 public class SetupQuadBehaviour : AbstractQuad
 {
+    #region variables
     [SerializeField]
     Transform _transform;
     public Transform Transform { get => _transform; private set => _transform = value; }
@@ -35,7 +39,14 @@ public class SetupQuadBehaviour : AbstractQuad
     [SerializeField]
     SpriteRenderer _renderer;
     public SpriteRenderer Renderer { get => _renderer; private set => _renderer = value; }
+    #endregion
 
+    /// <summary>
+    /// Initialize datas
+    /// </summary>
+    /// <param name="toCopy">transform to get position and scale information</param>
+    /// <param name="quadName">name of the future quad</param>
+    /// <param name="level">level of the future quad</param>
     public override void Initialize(Transform toCopy, string quadName, int level)
     {
         TextPosition = toCopy.localPosition;

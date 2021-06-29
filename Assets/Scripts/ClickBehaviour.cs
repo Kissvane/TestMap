@@ -1,17 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 
+/// <summary>
+/// Activate click feedback when clicking on a quad
+/// </summary>
 public class ClickBehaviour : MonoBehaviour
 {
     [SerializeField]
-    Camera Camera;
-    [SerializeField]
     LayerMask LayerMask;
 
-    // Update is called once per frame
+    /// <summary>
+    /// Detect the click and activate feedback on clicked quad
+    /// </summary>
     void Update()
     {
 #if (!UNITY_IOS && !UNITY_ANDROID) || UNITY_EDITOR
@@ -28,11 +30,16 @@ public class ClickBehaviour : MonoBehaviour
                 if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().QuadData.Level) == GameManager.instance.MapZoomer.ZoomLevel) 
                 {
                     rayHit.collider.gameObject.GetComponent<QuadBehaviour>().ClickFeedback();
+                    GameManager.instance.QuadCounter.ShowResult();
                 }
             }
         }
     }
 
+    /// <summary>
+    /// The unity methods doesn't work on mobile so I use this one
+    /// </summary>
+    /// <returns></returns>
     private bool IsPointerOverUIObject()
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);

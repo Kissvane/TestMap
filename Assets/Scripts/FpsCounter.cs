@@ -2,11 +2,16 @@
 using UnityEngine.UI;
 using System.Collections;
 
+/// <summary>
+/// Calculate and show FPS
+/// </summary>
 public class FpsCounter : MonoBehaviour
 {
+    #region variables
     [SerializeField] private Text _fpsText;
     [SerializeField] private float _hudRefreshRate = 1f;
-    private float _timer;
+    float _timer;
+    #endregion
 
     private void Update()
     {
