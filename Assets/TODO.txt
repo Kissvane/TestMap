@@ -1,6 +1,9 @@
-faire un diagram de classe pour l'application
+tester la version brut
+
+Code cleaning
 
 ameliorations
 
 ECS
-Mise en place d'un système d'object pooling pour les quads
+
+

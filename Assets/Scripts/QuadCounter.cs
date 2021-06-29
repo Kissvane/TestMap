@@ -18,14 +18,16 @@ public class QuadCounter : MonoBehaviour
     [SerializeField]
     Ease Ease;
 
+    public List<QuadData> test;
+
     public void ShowResult()
     {
         int visible = 0;
-        for (int i = 0; i < Linker.instance.MapConstructor.Levels.Count; i++)
+        foreach (QuadData[] array in GameManager.instance.MapData.Levels)
         {
-            foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[i])
+            foreach (QuadData quad in array) 
             {
-                if (quad.Renderer.isVisible)
+                if (quad.Quad.Renderer.isVisible)
                 {
                     visible++;
                 }

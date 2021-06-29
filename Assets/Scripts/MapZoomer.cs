@@ -10,7 +10,7 @@ public class MapZoomer : MonoBehaviour
 
     int _zoomLevel = 1;
     public int ZoomLevel { get => _zoomLevel; private set => _zoomLevel = value; }
-    
+
     [SerializeField]
     List<float> ZoomDistances;
 
@@ -20,31 +20,25 @@ public class MapZoomer : MonoBehaviour
     [SerializeField]
     KeyCode ZoomOutKey;
 
-    
-
     public void FirstZoom()
     {
-        for (int i = 2; i < 5; i++)
-        {
-            ActivateQuads(i, false);
-        }
+        ActivateQuads(1, true);
     }
 
     public void ZoomIn()
     {
-        if (_zoomLevel < 4) 
+        if (_zoomLevel < 4)
         {
             HideNames(ZoomLevel);
             _zoomLevel++;
             _camera.orthographicSize = ZoomDistances[_zoomLevel - 1];
-            ActivateQuads(_zoomLevel,true);
+            ActivateQuads(_zoomLevel, true);
         }
     }
 
-
     public void ZoomOut()
     {
-        if (_zoomLevel > 1) 
+        if (_zoomLevel > 1)
         {
             ActivateQuads(_zoomLevel, false);
             _zoomLevel--;
@@ -55,18 +49,18 @@ public class MapZoomer : MonoBehaviour
 
     public void ActivateQuads(int level, bool activate)
     {
-        Linker.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
-        foreach (QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
+        GameManager.instance.MapBuilder.LevelsParents[level - 1].gameObject.SetActive(activate);
+        foreach (QuadData data in GameManager.instance.MapData.Levels[level - 1])
         {
-            quad.EnableTextIfAlreadyVisible();
+            data.Quad.EnableTextIfAlreadyVisible();
         }
     }
 
     public void HideNames(int level)
     {
-        foreach(QuadBehaviour quad in Linker.instance.MapConstructor.Levels[level - 1])
+        foreach (QuadData data in GameManager.instance.MapData.Levels[level - 1])
         {
-            quad.DisableText();
+            data.Quad.DisableText();
         }
     }
 
