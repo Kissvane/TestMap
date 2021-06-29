@@ -104,7 +104,7 @@ public class QuadBehaviour : MonoBehaviour
 
     void OnBecameVisible()
     {
-        if (GameManager.instance.MapZoomer.ZoomLevel == level) 
+        if (GameManager.instance.MapZoomer.ZoomLevel == level && !GameManager.instance.LockedInputs) 
         {
             GetFromPool();
         }
@@ -140,14 +140,17 @@ public class QuadBehaviour : MonoBehaviour
 
     void GetFromPool()
     {
-        //Get Text from object pooler
-        Text = GameManager.instance.Pool.Pull();
-        //set the wanted scale and position
-        Transform textTransform = Text.transform;
-        textTransform.localPosition = TextPosition;
-        textTransform.localScale = TextScale;
-        Text.text = QuadName;
-        Text.gameObject.SetActive(true);
+        if (Text == null) 
+        {
+            //Get Text from object pooler
+            Text = GameManager.instance.Pool.Pull();
+            //set the wanted scale and position
+            Transform textTransform = Text.transform;
+            textTransform.localPosition = TextPosition;
+            textTransform.localScale = TextScale;
+            Text.text = QuadName;
+            Text.gameObject.SetActive(true);
+        }
     }
 
     void GiveToPool()

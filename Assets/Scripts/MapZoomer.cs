@@ -38,10 +38,13 @@ public class MapZoomer : MonoBehaviour
         if (_zoomLevel < 4)
         {
             GameManager.instance.LockInputs(true);
-            HideNames(ZoomLevel);
+            //HideNames(ZoomLevel);
+            StartCoroutine(AsyncActivateNames(ZoomLevel, false, zoomTime*0.2f));
             _zoomLevel++;
             _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
-            StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime+0.1f));
+            //ActivateQuads(ZoomLevel, true);
+            StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime*0.6f));
+            StartCoroutine(AsyncActivateNames(ZoomLevel, true, zoomTime));
         }
     }
 
@@ -50,10 +53,12 @@ public class MapZoomer : MonoBehaviour
         if (ZoomLevel > 1)
         {
             GameManager.instance.LockInputs(true);
-            ActivateQuads(ZoomLevel, false);
+            //ActivateQuads(ZoomLevel, false);
+            StartCoroutine(ActivateQuadsAsync(ZoomLevel, false, zoomTime * 0.2f));
             ZoomLevel--;
             _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
-            ActivateQuads(ZoomLevel, true);
+            StartCoroutine(AsyncActivateNames(ZoomLevel, true, zoomTime));
+            //ActivateQuads(ZoomLevel, true);
             //StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime+0.1f));
         }
     }
@@ -67,9 +72,16 @@ public class MapZoomer : MonoBehaviour
     public void ActivateQuads(int level, bool activate)
     {
         GameManager.instance.MapConstructor.LevelsParents[level - 1].gameObject.SetActive(activate);
-        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+        if (activate) 
         {
-            quad.EnableTextIfAlreadyVisible();
+            foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+            {
+                quad.EnableTextIfAlreadyVisible();
+            }
+        }
+        else
+        {
+            HideNames(level);
         }
     }
 
@@ -77,6 +89,22 @@ public class MapZoomer : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         ActivateQuads(level, activate);
+    }
+
+    IEnumerator AsyncActivateNames(int level, bool activate, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        if (activate) 
+        {
+            foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+            {
+                quad.EnableTextIfAlreadyVisible();
+            }
+        }
+        else
+        {
+            HideNames(level);
+        }
     }
 
     public void HideNames(int level)
