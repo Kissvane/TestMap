@@ -124,6 +124,7 @@ public class QuadBehaviour : MonoBehaviour
     #region visibility behaviours
     void OnBecameVisible()
     {
+        GameManager.instance.VisibleQuads.Add(this);
         if (GameManager.instance.MapZoomer.ZoomLevel == level && !GameManager.instance.LockedInputs) 
         {
             GetFromPool();
@@ -132,11 +133,13 @@ public class QuadBehaviour : MonoBehaviour
 
     void OnBecameInvisible()
     {
+        GameManager.instance.VisibleQuads.Remove(this);
         GiveToPool();
     }
 
     void OnDisable()
     {
+        GameManager.instance.VisibleQuads.Remove(this);
         GiveToPool();
         if (isShaking)
         {

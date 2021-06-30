@@ -120,7 +120,13 @@ public class MapZoomer : MonoBehaviour
     IEnumerator AsyncActivateNames(int level, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+        HashSet<QuadBehaviour> quads = new HashSet<QuadBehaviour>();
+        foreach (QuadBehaviour quadBehaviour in GameManager.instance.VisibleQuads)
+        {
+            quads.Add(quadBehaviour);
+        }
+        Debug.Log(quads.Count);
+        foreach (QuadBehaviour quad in quads)
         {
             quad.EnableTextIfAlreadyVisible(true, waitTime/4f);
         }
@@ -135,7 +141,12 @@ public class MapZoomer : MonoBehaviour
     /// <param name="waitTime"></param>
     void FadeNames(int level, float waitTime) 
     {
-        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+        HashSet<QuadBehaviour> quads = new HashSet<QuadBehaviour>();
+        foreach (QuadBehaviour quadBehaviour in GameManager.instance.VisibleQuads)
+        {
+            if(quadBehaviour.Level == ZoomLevel) quads.Add(quadBehaviour);
+        }
+        foreach (QuadBehaviour quad in quads)
         {
             quad.FadeText(waitTime);
         }

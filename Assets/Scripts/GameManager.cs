@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Manage dependencies between all communicating scripts 
@@ -41,6 +42,7 @@ public class GameManager : MonoBehaviour
     static GameManager _instance;
     public static GameManager instance { get { return _instance; } }
 
+    public HashSet<QuadBehaviour> VisibleQuads = new HashSet<QuadBehaviour>();
 
     GameManager()
     {
