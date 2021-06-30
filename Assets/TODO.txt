@@ -1,6 +1,2 @@
-faire un diagram de classe pour l'application
-
-ameliorations
-
-ECS
-Mise en place d'un système d'object pooling pour les quads
+mettre a jour la doc
+Code cleaning

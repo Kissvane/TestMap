@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+
 
 [System.Serializable]
 public class JsonQuadData
@@ -38,8 +37,12 @@ public class JsonQuadData
     }
 }
 
+/// <summary>
+/// Manage data storing and name showing
+/// </summary>
 public class QuadBehaviour : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     Transform _transform;
     public Transform Transform { get => _transform; private set => _transform = value; }
@@ -83,9 +86,14 @@ public class QuadBehaviour : MonoBehaviour
     SpriteRenderer _renderer;
     public SpriteRenderer Renderer { get => _renderer; private set => _renderer = value; }
     
-
     bool isShaking = false;
+    #endregion
 
+    #region Init functions
+    /// <summary>
+    /// QuadBehaviour rehydratation function
+    /// </summary>
+    /// <param name="jsondata">the data used</param>
     public void JsonInitialisation(JsonQuadData jsondata)
     {
         QuadShakeStrength = jsondata.QuadShakeStrength;
@@ -102,6 +110,17 @@ public class QuadBehaviour : MonoBehaviour
         Renderer.sortingOrder = Level - 1;
     }
 
+    public void Initialize(Transform toCopy, string quadName, int level)
+    {
+        TextPosition = toCopy.localPosition;
+        TextScale = toCopy.localScale;
+        this.QuadName = quadName;
+        InitialPosition = Transform.localPosition;
+        Level = level;
+    }
+    #endregion
+
+    #region visibility behaviours
     void OnBecameVisible()
     {
         if (GameManager.instance.MapZoomer.ZoomLevel == level && !GameManager.instance.LockedInputs) 
@@ -124,21 +143,40 @@ public class QuadBehaviour : MonoBehaviour
             ResetQuadPosition();
         }
     }
+    #endregion
 
+    #region name behaviours
     public void DisableText()
     {
         GiveToPool();
     }
 
-    public void EnableTextIfAlreadyVisible()
+    /// <summary>
+    /// Fade the text then release it to the pool
+    /// </summary>
+    /// <param name="fadeTime"> fade duration </param>
+    public void FadeText(float fadeTime)
     {
-        if (Renderer.isVisible && GameManager.instance.MapZoomer.ZoomLevel == level)
+        if (Renderer.isVisible) 
         {
-            GetFromPool();
+            Text.DOFade(0f, fadeTime).OnComplete(GiveToPool);
         }
     }
 
-    void GetFromPool()
+    public void EnableTextIfAlreadyVisible(bool fade = false, float fadeTime = 0f)
+    {
+        if (Renderer.isVisible && GameManager.instance.MapZoomer.ZoomLevel == level)
+        {
+            GetFromPool(fade, fadeTime);
+        }
+    }
+
+    /// <summary>
+    /// Pick a text from pool. And alter text parameters to make it quadName
+    /// </summary>
+    /// <param name="fade"> use fade to show the text </param>
+    /// <param name="fadeTime"> show fade duration </param>
+    void GetFromPool(bool fade = false, float fadeTime = 0f)
     {
         if (Text == null) 
         {
@@ -149,10 +187,29 @@ public class QuadBehaviour : MonoBehaviour
             textTransform.localPosition = TextPosition;
             textTransform.localScale = TextScale;
             Text.text = QuadName;
+            
             Text.gameObject.SetActive(true);
+            //fade management
+            if (fade) 
+            {
+                Color color = Text.color;
+                color.a = 0f;
+                Text.color = color;
+                Text.DOFade(1f, fadeTime);
+            }
+            //be sure the wanted text is not transparent
+            else
+            {
+                Color color = Text.color;
+                color.a = 1f;
+                Text.color = color;
+            }
         }
     }
 
+    /// <summary>
+    /// Release this quadBehaviour name in the pool
+    /// </summary>
     void GiveToPool()
     {
         if (Text != null) 
@@ -168,29 +225,6 @@ public class QuadBehaviour : MonoBehaviour
         }
     }
 
-    public void Initialize(Transform toCopy, string quadName, int level)
-    {
-        TextPosition = toCopy.localPosition;
-        TextScale = toCopy.localScale;
-        this.QuadName = quadName;
-        InitialPosition = Transform.localPosition;
-        Level = level;
-    }
-
-    public void ClickFeedback()
-    {
-        DOTween.Kill(Transform);
-        RectTransform textTransform = Text.rectTransform;
-        DOTween.Kill(textTransform.transform);
-        ResetQuadPosition();
-        ResetTextPosition();
-        isShaking = true;
-        //shake the Quad
-        textTransform.DOShakeAnchorPos(0.5f, TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
-        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
-        GameManager.instance.QuadCounter.ShowResult();
-    }
-
     void ResetTextPosition()
     {
         isShaking = false;
@@ -201,4 +235,27 @@ public class QuadBehaviour : MonoBehaviour
     {
         Transform.localPosition = InitialPosition;
     }
+
+    #endregion
+
+    /// <summary>
+    /// manage click feedback
+    /// </summary>
+    public void ClickFeedback()
+    {
+        //kill ongoing shake
+        DOTween.Kill(Transform);
+        RectTransform textTransform = Text.rectTransform;
+        DOTween.Kill(textTransform.transform);
+        //reset quad and name position to prevent quad displacement when a shake is interrupting another
+        ResetQuadPosition();
+        ResetTextPosition();
+        isShaking = true;
+        //shake the name
+        textTransform.DOShakeAnchorPos(0.5f, TextShakeStrength * Transform.lossyScale.x).OnComplete(ResetTextPosition);
+        //shake the quad
+        Transform.DOShakePosition(0.5f, Transform.lossyScale.x * QuadShakeStrength, 20, 0).OnComplete(ResetQuadPosition);
+    }
+
+    
 }

@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Manage dependencies between all communicating scripts 
+/// </summary>
 public class GameManager : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     MapBuilder mapConstructor;
     public MapBuilder MapConstructor { get => mapConstructor; private set => mapConstructor = value; }
@@ -25,6 +27,7 @@ public class GameManager : MonoBehaviour
     public bool LockedInputs { get => lockedInputs; private set => lockedInputs = value; }
 
     public GameObject UiCanvas;
+    #endregion
 
     #region singleton
     static GameManager _instance;

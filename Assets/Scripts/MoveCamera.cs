@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Manage horizontal and vertical camera movement
+/// </summary>
 public class MoveCamera : MonoBehaviour
 {
+    #region variable
     [SerializeField]
     Transform Transform;
 
@@ -21,27 +23,12 @@ public class MoveCamera : MonoBehaviour
     Vector3 target;
     [SerializeField]
     Vector3 move;
+    #endregion
 
-
-    // Start is called before the first frame update
+    #region Monobehaviour callbacks
     void Awake()
     {
-        UpdateTarget();
-    }
-
-    public void UpdateTarget()
-    {
         target = Transform.position;
-    }
-
-    public void SetMoveX(int value)
-    {
-        move.x = value;
-    }
-
-    public void SetMoveY(int value)
-    {
-        move.y = value;
     }
 
     // Update is called once per frame
@@ -57,7 +44,7 @@ public class MoveCamera : MonoBehaviour
         if (move != Vector3.zero)
         {
             target = Transform.position + move.normalized * UsedSpeed;
-            target = new Vector3( Mathf.Clamp(target.x, LowLimit.position.x, HighLimit.position.x), Mathf.Clamp(target.y, LowLimit.position.y, HighLimit.position.y), Transform.position.z);
+            target = new Vector3(Mathf.Clamp(target.x, LowLimit.position.x, HighLimit.position.x), Mathf.Clamp(target.y, LowLimit.position.y, HighLimit.position.y), Transform.position.z);
         }
 
         //ease in and out on camera movement
@@ -66,4 +53,17 @@ public class MoveCamera : MonoBehaviour
             Transform.position = Vector3.SmoothDamp(Transform.position, target, ref velocity, 0.25f);
         }
     }
+    #endregion
+
+    #region UI move functions
+    public void SetMoveX(int value)
+    {
+        move.x = value;
+    }
+
+    public void SetMoveY(int value)
+    {
+        move.y = value;
+    }
+    #endregion
 }

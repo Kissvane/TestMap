@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
+/// <summary>
+/// Calculate and show FPS
+/// </summary>
 public class FpsCounter : MonoBehaviour
 {
     [SerializeField] private Text _fpsText;

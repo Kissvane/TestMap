@@ -1,11 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+/// <summary>
+/// Count the number of visible
+/// </summary>
 public class QuadCounter : MonoBehaviour
 {
+    #region variables
     [SerializeField]
     Text Text;
 
@@ -17,7 +19,11 @@ public class QuadCounter : MonoBehaviour
 
     [SerializeField]
     Ease Ease;
+    #endregion
 
+    /// <summary>
+    /// Count the number of visible and show it
+    /// </summary>
     public void ShowResult()
     {
         int visible = 0;
@@ -36,11 +42,17 @@ public class QuadCounter : MonoBehaviour
         PopIn();
     }
 
+    /// <summary>
+    /// Showing animation of quad counter UI
+    /// </summary>
     public void PopIn()
     {
         Popup.DOAnchorPos3DX(0f, MoveSpeed).SetEase(Ease).SetSpeedBased();
     }
 
+    /// <summary>
+    /// Hiding animation of quad counter UI
+    /// </summary>
     public void PopoOut()
     {
         Popup.DOAnchorPos3DX(-Popup.sizeDelta.x, MoveSpeed).SetEase(Ease).SetSpeedBased();

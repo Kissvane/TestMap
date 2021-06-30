@@ -17,6 +17,9 @@ public class JsonMapData
     }
 }
 
+/// <summary>
+/// Manage map construction and data.
+/// </summary>
 public class MapBuilder : MonoBehaviour
 {
     #region Variables
@@ -55,11 +58,11 @@ public class MapBuilder : MonoBehaviour
     #endregion
 
     #region monobehaviours callbacks
-    // Start is called before the first frame update
     void Awake()
     {
         FirstQuad.transform.localScale = Vector3.one * size;
         NameCanvas.transform.localScale *= size;
+        //if the map isn't already built. Build it
         if (LevelsParents[0].childCount == 0) 
         {
             SetupCanvas.gameObject.SetActive(true);
@@ -69,8 +72,8 @@ public class MapBuilder : MonoBehaviour
             {
                 t.gameObject.SetActive(false);
             }
-            SetupCanvas.gameObject.SetActive(false);
         }
+        //initialize the data with the already built map
         else
         {
             for (int i = 0; i < LevelsParents.Count; i++) 
@@ -80,12 +83,18 @@ public class MapBuilder : MonoBehaviour
             }
             FirstQuad.SetActive(false);
         }
+        //this tool is useless now. Disbale it
         SetupCanvas.gameObject.SetActive(false);
         GameManager.instance.MapZoomer.FirstZoom();
     }
 
     #endregion
 
+    #region editor tools
+
+    /// <summary>
+    /// Save map data from a runtime constructed map in playerspref
+    /// </summary>
     [ContextMenu("SAVE")]
     public void SaveMap()
     {
@@ -94,6 +103,9 @@ public class MapBuilder : MonoBehaviour
         PlayerPrefs.SetString("MAP", data);
     }
 
+    /// <summary>
+    /// Destroy the previously build map
+    /// </summary>
     [ContextMenu("CLEAR MAP")]
     void ClearPreviousMap()
     {
@@ -106,6 +118,9 @@ public class MapBuilder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Load mapData from playersPref and build a map from these data
+    /// </summary>
     [ContextMenu("LOAD")]
     public void LoadMap()
     {
@@ -138,13 +153,11 @@ public class MapBuilder : MonoBehaviour
         }
         SetupCanvas.gameObject.SetActive(false);
     }
+    #endregion
 
     #region constructions functions
     public void ConstructLevel1()
     {
-        //FirstQuad.transform.localScale = Vector3.one * size;
-        //NameCanvas.transform.localScale *= size;
-
         FirstQuad.transform.SetParent(LevelsParents[0]);
         FirstQuad.transform.localPosition = new Vector3(FirstQuad.transform.localPosition.x, FirstQuad.transform.localPosition.y, 0f);
         QuadBehaviour behaviour = FirstQuad.GetComponentInChildren<QuadBehaviour>();
@@ -186,7 +199,7 @@ public class MapBuilder : MonoBehaviour
                 Transform pivot;
                 int totalIndex;
                 ProcessQuad(parent, 3, 0.9f, lineNumber, columnNumber, x, y, out spriteRenderer, out pivot, out totalIndex);
-                spriteRenderer.color = GetRandomShade(parentColor);
+                spriteRenderer.color = Tools.GetRandomShade(parentColor,ShadeRange);
                 ConstructLevel4(pivot, 3f, 3f, spriteRenderer.color);
             }
         }
@@ -239,24 +252,29 @@ public class MapBuilder : MonoBehaviour
     /// <param name="totalIndex"></param>
     public void ProcessQuad(Transform parent, int level, float scaleReduction, float lineNumber, float columnNumber, float lineIndex, float columnIndex, out SpriteRenderer renderer, out Transform nextPivot, out int totalIndex)
     {
+        //position and scale global object to fill entirely his place in the row 
         Transform current = Instantiate(QuadPfb, parent).transform;
         current.localScale /= Mathf.Max(lineNumber, columnNumber);
         current.localPosition = new Vector3(lineIndex / columnNumber, -columnIndex / lineNumber, 0f);
+        //reduce visualQuad size to have limit between the quads of this level
         current.GetChild(0).localScale *= scaleReduction;
+        //get some component and object on the quad
         totalIndex = (int)(lineIndex + columnIndex * lineNumber);
         Transform constructedQuad = current.GetChild(0);
         SpriteRenderer r = constructedQuad.GetComponent<SpriteRenderer>();
-
+        //tune the quad sorting order to make deeper level visible on top of others
         r.sortingOrder = level - 1;
+        //parent the quad to his level parent transform
         constructedQuad.SetParent(LevelsParents[level - 1]);
-        constructedQuad.localPosition = new Vector3(constructedQuad.localPosition.x, constructedQuad.localPosition.y, 0f);
+        //constructedQuad.localPosition = new Vector3(constructedQuad.localPosition.x, constructedQuad.localPosition.y, 0f);
         QuadBehaviour behaviour = constructedQuad.GetComponent<QuadBehaviour>();
-        GetTextData(behaviour, GetRandomName(), level);
+        //save quad data in QuadBehaviour instance
+        GetTextData(behaviour, Tools.GetRandomName(NameLength), level);
         Levels[level - 1].Add(behaviour);
-
+        //destroy useless objects
         Destroy(current.gameObject);
         Destroy(constructedQuad.GetChild(0).gameObject);
-
+        //assign out values
         nextPivot = constructedQuad.GetChild(0);
         renderer = r;
     }
@@ -266,6 +284,8 @@ public class MapBuilder : MonoBehaviour
     /// And get the necessary dependencies
     /// </summary>
     /// <param name="quad"></param>
+    /// <param name="quadName"></param>
+    /// <param name="level"></param>
     public void GetTextData(QuadBehaviour quad, string quadName, int level)
     {
         SetupCanvas.SetParent(quad.transform);
@@ -279,23 +299,7 @@ public class MapBuilder : MonoBehaviour
 
     #endregion
 
-    string GetRandomName()
-    {
-        string result = "";
-
-        for (int i = 0; i < NameLength; i++)
-        {
-            result = string.Concat(result, (char) Random.Range(65, 90));
-        }
-
-        return result;
-    }
-
-    Color GetRandomShade(Color original)
-    {
-        Color.RGBToHSV(original, out float H, out float S, out float V);
-        return Color.HSVToRGB(H, Random.Range(0.5f + ShadeRange, 0.5f + ShadeRange * 2), V + Random.Range(-ShadeRange / 2f, ShadeRange / 2f));
-    }
+    
     
 
 }

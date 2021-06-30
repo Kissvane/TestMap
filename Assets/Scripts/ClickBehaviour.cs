@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 
+/// <summary>
+/// Detect on which quad the user clicked and activate necessary feedbacks
+/// </summary>
 public class ClickBehaviour : MonoBehaviour
 {
     [SerializeField]
@@ -26,12 +28,20 @@ public class ClickBehaviour : MonoBehaviour
                 RaycastHit2D rayHit = rayHits.OrderByDescending(x => x.collider.GetComponent<QuadBehaviour>().Level).First();
                 if (Mathf.RoundToInt(rayHit.collider.GetComponent<QuadBehaviour>().Level) == GameManager.instance.MapZoomer.ZoomLevel) 
                 {
+                    //activate shake feedback
                     rayHit.collider.gameObject.GetComponent<QuadBehaviour>().ClickFeedback();
+                    //show the number of visible quad
+                    GameManager.instance.QuadCounter.ShowResult();
                 }
             }
         }
     }
 
+    /// <summary>
+    /// Test if the pointer is on UI object. this one works on mobile platform.
+    /// The unity one doesn't
+    /// </summary>
+    /// <returns></returns>
     private bool IsPointerOverUIObject()
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
