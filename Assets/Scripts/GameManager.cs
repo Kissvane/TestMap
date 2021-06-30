@@ -26,12 +26,21 @@ public class GameManager : MonoBehaviour
     bool lockedInputs = false;
     public bool LockedInputs { get => lockedInputs; private set => lockedInputs = value; }
 
+    [SerializeField]
+    bool apparitionFade = false;
+    public bool ApparationFade { get => apparitionFade; set => apparitionFade = value; }
+
+    [SerializeField]
+    bool hideFade = false;
+    public bool HideFade { get => hideFade; set => hideFade = value; }
+
     public GameObject UiCanvas;
     #endregion
 
     #region singleton
     static GameManager _instance;
     public static GameManager instance { get { return _instance; } }
+
 
     GameManager()
     {

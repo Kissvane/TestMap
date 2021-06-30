@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 
 /// <summary>
@@ -47,7 +48,7 @@ public class MapZoomer : MonoBehaviour
             _zoomLevel++;
             _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
             StartCoroutine(ActivateQuadsAsync(ZoomLevel, true, zoomTime * 0.6f));
-            StartCoroutine(AsyncActivateNames(ZoomLevel, true, zoomTime));
+            StartCoroutine(AsyncActivateNames(ZoomLevel, zoomTime));
         }
     }
 
@@ -59,7 +60,7 @@ public class MapZoomer : MonoBehaviour
             StartCoroutine(ActivateQuadsAsync(ZoomLevel, false, zoomTime * 0.4f));
             ZoomLevel--;
             _camera.DOOrthoSize(ZoomDistances[ZoomLevel - 1], zoomTime).SetEase(Ease).OnComplete(UnlockInputs);
-            StartCoroutine(AsyncActivateNames(ZoomLevel, true, zoomTime));
+            StartCoroutine(AsyncActivateNames(ZoomLevel, zoomTime));
         }
     }
 
@@ -89,7 +90,10 @@ public class MapZoomer : MonoBehaviour
         }
         else
         {
-            HideNames(level);
+            foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
+            {
+                quad.DisableText();
+            }
         }
     }
 
@@ -113,17 +117,16 @@ public class MapZoomer : MonoBehaviour
     /// <param name="activate"> define if it's an activation or disactivation </param>
     /// <param name="waitTime"> wait time before performing the operation </param>
     /// <returns></returns>
-    IEnumerator AsyncActivateNames(int level, bool activate, float waitTime)
+    IEnumerator AsyncActivateNames(int level, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        if (activate)
+        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
         {
-            foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
-            {
-                quad.EnableTextIfAlreadyVisible(true, waitTime/4f);
-            }
+            quad.EnableTextIfAlreadyVisible(true, waitTime/4f);
         }
     }
+
+
 
     /// <summary>
     /// Fade names to transparent then release text to the pool
@@ -135,19 +138,6 @@ public class MapZoomer : MonoBehaviour
         foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
         {
             quad.FadeText(waitTime);
-        }
-    }
-
-
-    /// <summary>
-    /// Hide the names on a specific level
-    /// </summary>
-    /// <param name="level">the selected level</param>
-    public void HideNames(int level)
-    {
-        foreach (QuadBehaviour quad in GameManager.instance.MapConstructor.Levels[level - 1])
-        {
-            quad.DisableText();
         }
     }
 

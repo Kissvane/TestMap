@@ -87,6 +87,7 @@ public class QuadBehaviour : MonoBehaviour
     public SpriteRenderer Renderer { get => _renderer; private set => _renderer = value; }
     
     bool isShaking = false;
+
     #endregion
 
     #region Init functions
@@ -159,7 +160,14 @@ public class QuadBehaviour : MonoBehaviour
     {
         if (Renderer.isVisible) 
         {
-            Text.DOFade(0f, fadeTime).OnComplete(GiveToPool);
+            if (GameManager.instance.HideFade) 
+            {
+                Text.DOFade(0f, fadeTime).OnComplete(GiveToPool);
+            }
+            else
+            {
+                GiveToPool();
+            }
         }
     }
 
@@ -167,7 +175,7 @@ public class QuadBehaviour : MonoBehaviour
     {
         if (Renderer.isVisible && GameManager.instance.MapZoomer.ZoomLevel == level)
         {
-            GetFromPool(fade, fadeTime);
+            GetFromPool(fade && GameManager.instance.ApparationFade, fadeTime);
         }
     }
 
